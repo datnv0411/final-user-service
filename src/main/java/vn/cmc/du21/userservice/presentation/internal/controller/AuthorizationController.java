@@ -15,6 +15,6 @@ public class AuthorizationController {
     @GetMapping("/verify")
     ResponseEntity<Object> verify(HttpServletResponse response, HttpServletRequest request)
     {
-
+return null;
     }
 }
