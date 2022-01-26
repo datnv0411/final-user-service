@@ -29,6 +29,21 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<Session> sessions;
 
+    public User() {
+    }
+
+    public User(long userId, String fullName, Date dob, String gender, String email, String cellphone, Set<Role> roles, Collection<Address> address, Collection<Session> sessions) {
+        this.userId = userId;
+        this.fullName = fullName;
+        this.dob = dob;
+        this.gender = gender;
+        this.email = email;
+        this.cellphone = cellphone;
+        this.roles = roles;
+        this.address = address;
+        this.sessions = sessions;
+    }
+
     public long getUserId() {
         return userId;
     }

@@ -21,6 +21,22 @@ public class Address {
     @JoinColumn(name = "userId")
     private User user;
 
+    public Address() {
+    }
+
+    public Address(long addressId, boolean isDefault, String typeAddress, String fullName, String cellphone, String province, String district, String town, String specificAddress, User user) {
+        this.addressId = addressId;
+        this.isDefault = isDefault;
+        this.typeAddress = typeAddress;
+        this.fullName = fullName;
+        this.cellphone = cellphone;
+        this.province = province;
+        this.district = district;
+        this.town = town;
+        this.specificAddress = specificAddress;
+        this.user = user;
+    }
+
     public long getAddressId() {
         return addressId;
     }

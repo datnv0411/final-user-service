@@ -12,11 +12,21 @@ public class Session {
     private String token;
     private Timestamp expireTime;
     private String status;
-    private String otp;
 
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
+
+    public Session() {
+    }
+
+    public Session(long sessionId, String token, Timestamp expireTime, String status, User user) {
+        this.sessionId = sessionId;
+        this.token = token;
+        this.expireTime = expireTime;
+        this.status = status;
+        this.user = user;
+    }
 
     public long getSessionId() {
         return sessionId;
@@ -48,14 +58,6 @@ public class Session {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
     }
 
     public User getUser() {

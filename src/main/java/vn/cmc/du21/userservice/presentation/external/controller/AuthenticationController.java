@@ -26,15 +26,17 @@ public class AuthenticationController {
     UserService userService;
     @Autowired
     AuthenticationService authenticationService;
-    //Login
+    // SignIn
     @PostMapping("/login")
-    ResponseEntity<Object> login(@RequestBody UserRequest userRequest, HttpServletResponse response, HttpServletRequest request){
+    ResponseEntity<Object> login(@RequestParam(value = "cellphone") String cellphone, HttpServletResponse response, HttpServletRequest request)
+    {
 
     }
 
-    // Verify
-    @PostMapping("/verify")
-    ResponseEntity<Object> getUser(@RequestBody SessionRequest sessionRequest) {
+    // Logout
+    @GetMapping("/logout")
+    ResponseEntity<Object> logout(HttpServletResponse response, HttpServletRequest request)
+    {
 
     }
 }
