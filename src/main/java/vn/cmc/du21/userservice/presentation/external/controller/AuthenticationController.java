@@ -28,7 +28,9 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     // SignIn
     @PostMapping("/login")
-    ResponseEntity<Object> login(@RequestParam(value = "cellphone") String cellphone, HttpServletResponse response, HttpServletRequest request)
+    ResponseEntity<Object> login(@RequestParam(value = "cellphone") String cellphone,
+                                 HttpServletResponse response,
+                                 HttpServletRequest request)
     {
 
         UserResponse userResponse;
@@ -89,6 +91,25 @@ public class AuthenticationController {
     }
 
     //Generate Otp
+    @GetMapping("/generate-otp")
+    ResponseEntity<Object> generate(@RequestParam(value = "cellphone") String cellphone,
+                                    HttpServletResponse response,
+                                    HttpServletRequest request)
+    {
+        String otp = "1123";
+        authenticationService.addOtp(otp, cellphone);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new StandardResponse<>(
+                        StatusResponse.SUCCESSFUL,
+                        "Check your phone"
+                )
+        );
+    }
 
     //VerifyOtp
+    @PostMapping("/verifyOtp")
+    ResponseEntity<Object> verifyOtp(@ModelAttribute("otp") String otp)
+    {
+
+    }
 }

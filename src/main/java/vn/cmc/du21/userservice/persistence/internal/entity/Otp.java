@@ -19,6 +19,14 @@ public class Otp {
     public Otp() {
     }
 
+    public Otp(String otpPass, Timestamp otpTimeStamp, int otpTry, String cellphone, String status) {
+        this.otpPass = otpPass;
+        this.otpTimeStamp = otpTimeStamp;
+        this.otpTry = otpTry;
+        this.cellphone = cellphone;
+        this.status = status;
+    }
+
     public Otp(long otpId, String otpPass, Timestamp otpTimeStamp, int otpTry, String cellphone, String status) {
         this.otpId = otpId;
         this.otpPass = otpPass;
