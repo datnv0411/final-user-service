@@ -12,27 +12,27 @@ import java.util.Set;
 
 @Service
 public class AuthenticationService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    SessionRepository sessionRepository;
-    public Session upsertSession(long userId, long deviceId) {
-        User user = userRepository.findById(userId).orElse(null);
-        Set<Session> sessions = sessionRepository.findByUserId(userId);
-
-        if(!sessions.isEmpty())
-        {
-            for (Session item:
-                 sessions) {
-                if(item.getDeviceId() == deviceId)
-                {
-                    
-                }
-            }
-        }
-        else
-        {
-
-        }
-    }
+//    @Autowired
+//    UserRepository userRepository;
+//    @Autowired
+//    SessionRepository sessionRepository;
+//    public Session upsertSession(long userId, long deviceId) {
+//        User user = userRepository.findById(userId).orElse(null);
+//        Set<Session> sessions = sessionRepository.findByUserId(userId);
+//
+//        if(!sessions.isEmpty())
+//        {
+//            for (Session item:
+//                 sessions) {
+//                if(item.getDeviceId() == deviceId)
+//                {
+//
+//                }
+//            }
+//        }
+//        else
+//        {
+//
+//        }
+//    }
 }

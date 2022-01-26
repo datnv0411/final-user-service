@@ -4,11 +4,11 @@ public class PageResponse<T> {
     private StatusResponse status;
     private String message;
     private T data;
-    private String page;
-    private String totalPage;
-    private String totalRecord;
+    private int page;
+    private int totalPage;
+    private Long totalRecord;
 
-    public PageResponse(StatusResponse status, String message, T data, String page, String totalPage, String totalRecord) {
+    public PageResponse(StatusResponse status, String message, T data, int page, int totalPage, Long totalRecord) {
         this.status = status;
         this.message = message;
         this.data = data;
@@ -41,27 +41,27 @@ public class PageResponse<T> {
         this.data = data;
     }
 
-    public String getPage() {
+    public int getPage() {
         return page;
     }
 
-    public void setPage(String page) {
+    public void setPage(int page) {
         this.page = page;
     }
 
-    public String getTotalPage() {
+    public int getTotalPage() {
         return totalPage;
     }
 
-    public void setTotalPage(String totalPage) {
+    public void setTotalPage(int totalPage) {
         this.totalPage = totalPage;
     }
 
-    public String getTotalRecord() {
+    public Long getTotalRecord() {
         return totalRecord;
     }
 
-    public void setTotalRecord(String totalRecord) {
+    public void setTotalRecord(Long totalRecord) {
         this.totalRecord = totalRecord;
     }
 }

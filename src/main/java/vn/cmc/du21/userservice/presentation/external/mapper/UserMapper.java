@@ -21,14 +21,23 @@ public class UserMapper {
 
     public static User convertUserRequestToUser(UserRequest userRequest)
     {
-        java.sql.Date dob = DateTimeUtil.stringToDateSql(userRequest.getDob());
-        return new User(userRequest.getUserId(), userRequest.getFullName(), dob,
-                userRequest.getGender(), userRequest.getEmail(), userRequest.getCellphone());
+        if (userRequest.getDob() != null) {
+            java.sql.Date dob = DateTimeUtil.stringToDateSql(userRequest.getDob());
+            return new User(userRequest.getUserId(), userRequest.getFullName(), dob,
+                    userRequest.getGender(), userRequest.getEmail(), userRequest.getCellphone());
+        }else {
+            Date dob = null;
+            return new User(userRequest.getUserId(), userRequest.getFullName(), dob,
+                    userRequest.getGender(), userRequest.getEmail(), userRequest.getCellphone());
+        }
     }
 
     public static UserResponse convertUserToUserResponse(User user)
     {
         return new UserResponse(user.getUserId(), user.getFullName(), DateTimeUtil.dateSqlToString(user.getDob()),
                 user.getGender(), user.getEmail(), user.getCellphone());
+    }
+    public static UserResponse convertCreateUser (User user){
+        return  new UserResponse(user.getCellphone());
     }
 }
