@@ -76,7 +76,7 @@ public class AuthenticationController {
 
     // Logout
     @GetMapping("/logout")
-    ResponseEntity<Object> logout(HttpServletResponse response, HttpServletRequest request) throws Exception {
+    ResponseEntity<Object> logout(HttpServletResponse response, HttpServletRequest request) throws Throwable {
         String[] arr = request.getHeader("Authorization").split(" ");
         String token = arr[1];
 
@@ -108,8 +108,24 @@ public class AuthenticationController {
 
     //VerifyOtp
     @PostMapping("/verifyOtp")
-    ResponseEntity<Object> verifyOtp(@ModelAttribute("otp") String otp)
+    ResponseEntity<Object> verifyOtp(@RequestParam(value = "cellphone") String cellphone,
+                                     @RequestParam(value = "otp") String otp)
     {
+        if(authenticationService.checkOtp(otp, cellphone))
+        {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new StandardResponse<>(
+                            StatusResponse.SUCCESSFUL,
+                            "verify successfully"
+                    )
+            );
+        }
 
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new StandardResponse<>(
+                        StatusResponse.BAD_REQUEST,
+                        "verify failed !!!"
+                )
+        );
     }
 }

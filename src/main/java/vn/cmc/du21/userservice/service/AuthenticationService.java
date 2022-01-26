@@ -11,8 +11,11 @@ import vn.cmc.du21.userservice.persistence.internal.repository.SessionRepository
 import vn.cmc.du21.userservice.persistence.internal.repository.UserRepository;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -45,7 +48,7 @@ public class AuthenticationService {
         return sessionRepository.save(newSession);
     }
 
-    public void disableToken(String token) throws IndexOutOfBoundsException {
+    public void disableToken(String token) throws Throwable {
         Session foundSession = sessionRepository.findByToken(token)
                 .orElseThrow(() -> {
                         throw new IndexOutOfBoundsException("Token is not available");
@@ -73,5 +76,58 @@ public class AuthenticationService {
             newOtp.setOtpTry(1);
             newOtp.setOtpTimeStamp(Timestamp.valueOf(LocalDateTime.now().plus(1, ChronoUnit.MINUTES)));
         }
+    }
+
+    public boolean checkOtp(String otp, String cellphone) {
+        Optional<Otp> foundOtp = otpRepository.findByCellphone(cellphone);
+        if(foundOtp.isPresent())
+        {
+            if(foundOtp.get().getOtpPass().equals(otp))
+            {
+                if(foundOtp.get().getStatus().equals("Verifying")
+                        && foundOtp.get().getOtpTry() <= 5
+                        && foundOtp.get().getOtpTimeStamp().before(Timestamp.valueOf(LocalDateTime.now()))){
+                    foundOtp.get().setStatus("Verified");
+                    otpRepository.save(foundOtp.get());
+                    return true;
+                }
+                foundOtp.get().setStatus("Failed");
+                otpRepository.save(foundOtp.get());
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+        return false;
+    }
+
+    public User getUserByToken(String token) {
+        if(checkTokenActive(token))
+        {
+            long sessionId = JwtTokenProvider.getSessionIdFromJWT(token);
+            Session foundSession = sessionRepository.findById(sessionId).orElse(null);
+            return userRepository.findById(foundSession.getUser().getUserId()).orElse(null);
+        }
+        return null;
+    }
+
+    private boolean checkTokenActive(String token) {
+         Optional<Session> foundSession = sessionRepository.findByToken(token);
+         if(foundSession.isPresent())
+         {
+             if(foundSession.get().getStatus().equals("Active"))
+             {
+                 Date expireTime = JwtTokenProvider.getExpireTimeFromJWT(token);
+                 if(expireTime.after(Date.from(Instant.now())))
+                 {
+                     return true;
+                 }
+             }
+         }
+
+         return false;
     }
 }

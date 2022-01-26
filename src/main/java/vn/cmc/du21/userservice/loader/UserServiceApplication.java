@@ -6,8 +6,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.sql.Date;
+
 @SpringBootApplication
-@ComponentScan(basePackages = {"vn.cmc.du21.userservice.presentation.external.controller", "vn.cmc.du21.userservice.service"})
+@ComponentScan(basePackages = {"vn.cmc.du21.userservice.presentation.external.controller",
+		"vn.cmc.du21.userservice.presentation.internal.controller",
+		"vn.cmc.du21.userservice.service"})
 @EntityScan(basePackages = "vn.cmc.du21.userservice.persistence.internal.entity")
 @EnableJpaRepositories(basePackages = "vn.cmc.du21.userservice.persistence.internal.repository")
 public class UserServiceApplication {
