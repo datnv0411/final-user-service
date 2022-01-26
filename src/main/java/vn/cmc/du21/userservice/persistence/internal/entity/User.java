@@ -2,7 +2,7 @@ package vn.cmc.du21.userservice.persistence.internal.entity;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Set;
 
 @Entity
@@ -30,6 +30,16 @@ public class User {
     private Collection<Session> sessions;
 
     public User() {
+    }
+
+    public User(long userId, String fullName, Date dob, String gender, String email, String cellphone) {
+        this.userId = userId;
+        this.fullName = fullName;
+        this.dob = dob;
+        this.gender = gender;
+        this.email = email;
+        this.cellphone = cellphone;
+        this.roles = roles;
     }
 
     public User(long userId, String fullName, Date dob, String gender, String email, String cellphone, Set<Role> roles, Collection<Address> address, Collection<Session> sessions) {

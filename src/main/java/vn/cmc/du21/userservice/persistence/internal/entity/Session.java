@@ -12,7 +12,7 @@ public class Session {
     private String token;
     private Timestamp expireTime;
     private String status;
-
+    private long deviceId;
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
@@ -20,11 +20,12 @@ public class Session {
     public Session() {
     }
 
-    public Session(long sessionId, String token, Timestamp expireTime, String status, User user) {
+    public Session(long sessionId, String token, Timestamp expireTime, String status, long deviceId, User user) {
         this.sessionId = sessionId;
         this.token = token;
         this.expireTime = expireTime;
         this.status = status;
+        this.deviceId = deviceId;
         this.user = user;
     }
 
@@ -34,6 +35,14 @@ public class Session {
 
     public void setSessionId(long sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public long getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(long deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getToken() {

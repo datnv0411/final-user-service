@@ -17,8 +17,8 @@ public class DateTimeUtil {
         super();
     }
 
-    public static LocalDate stringToLocalDate(String dateString) {
-        return LocalDate.parse(dateString, dateFormatter);
+    public static java.sql.Date stringToDateSql(String dateString) {
+        return java.sql.Date.valueOf(dateString);
     }
 
     public static LocalDateTime stringToLocalDateTime(String dateString) {
@@ -29,7 +29,8 @@ public class DateTimeUtil {
         return localDateTime.format(dateTimeFormatter);
     }
 
-    public static String localDateToString(LocalDate localDate) {
+    public static String dateSqlToString(Date date) {
+        LocalDate localDate = date.toLocalDate();
         return localDate.format(dateFormatter);
     }
 
@@ -47,5 +48,9 @@ public class DateTimeUtil {
 
     public static LocalDateTime sqlTimestampToLocalDateTime(Timestamp timestamp) {
         return timestamp.toLocalDateTime();
+    }
+
+    public static String timestampToString(Timestamp expireTime) {
+        return String.format(expireTime.toString(), dateTimeFormatter);
     }
 }

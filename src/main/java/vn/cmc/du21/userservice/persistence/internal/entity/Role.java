@@ -17,6 +17,11 @@ public class Role {
     public Role() {
     }
 
+    public Role(String nameRole, Set<User> users) {
+        this.nameRole = nameRole;
+        this.users = users;
+    }
+
     public Role(long roleId, String nameRole, Set<User> users) {
         this.roleId = roleId;
         this.nameRole = nameRole;
