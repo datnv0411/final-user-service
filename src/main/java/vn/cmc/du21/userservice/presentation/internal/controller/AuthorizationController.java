@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(path = "/api/v1.0/authentication")
 public class AuthorizationController {
     // Verify
-    @GetMapping("/verify")
-    ResponseEntity<Object> verify(HttpServletResponse response, HttpServletRequest request)
-    {
-
-    }
+//    @GetMapping("/verify")
+//    ResponseEntity<Object> verify(HttpServletResponse response, HttpServletRequest request)
+//    {
+//
+//    }
 }

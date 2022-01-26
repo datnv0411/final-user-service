@@ -5,12 +5,16 @@ import java.sql.Timestamp;
 public class SessionResponse {
     private long sessionId;
     private String token;
-    private String expireTime;
     private String status;
     private long deviceId;
     private long userId;
 
-    public SessionResponse() {
+    public SessionResponse(long sessionId, String token, String status, long deviceId, long userId) {
+        this.sessionId = sessionId;
+        this.token = token;
+        this.status = status;
+        this.deviceId = deviceId;
+        this.userId = userId;
     }
 
     public long getSessionId() {
@@ -27,14 +31,6 @@ public class SessionResponse {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public String getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(String expireTime) {
-        this.expireTime = expireTime;
     }
 
     public String getStatus() {
@@ -58,15 +54,6 @@ public class SessionResponse {
     }
 
     public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public SessionResponse(long sessionId, String token, String expireTime, String status, long deviceId, long userId) {
-        this.sessionId = sessionId;
-        this.token = token;
-        this.expireTime = expireTime;
-        this.status = status;
-        this.deviceId = deviceId;
         this.userId = userId;
     }
 }

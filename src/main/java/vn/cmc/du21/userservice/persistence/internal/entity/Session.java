@@ -10,7 +10,6 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long sessionId;
     private String token;
-    private Timestamp expireTime;
     private String status;
     private long deviceId;
     @ManyToOne
@@ -20,10 +19,14 @@ public class Session {
     public Session() {
     }
 
-    public Session(long sessionId, String token, Timestamp expireTime, String status, long deviceId, User user) {
+    public Session(long deviceId, User user) {;
+        this.deviceId = deviceId;
+        this.user = user;
+    }
+
+    public Session(long sessionId, String token, String status, long deviceId, User user) {
         this.sessionId = sessionId;
         this.token = token;
-        this.expireTime = expireTime;
         this.status = status;
         this.deviceId = deviceId;
         this.user = user;
@@ -37,14 +40,6 @@ public class Session {
         this.sessionId = sessionId;
     }
 
-    public long getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(long deviceId) {
-        this.deviceId = deviceId;
-    }
-
     public String getToken() {
         return token;
     }
@@ -53,20 +48,20 @@ public class Session {
         this.token = token;
     }
 
-    public Timestamp getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(Timestamp expireTime) {
-        this.expireTime = expireTime;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public long getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(long deviceId) {
+        this.deviceId = deviceId;
     }
 
     public User getUser() {

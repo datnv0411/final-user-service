@@ -14,7 +14,7 @@ public class User {
     private String fullName;
     private Date dob;
     private String gender;
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
     @Column(nullable = false, unique = true)
     private String cellphone;
