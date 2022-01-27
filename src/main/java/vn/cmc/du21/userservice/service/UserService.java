@@ -22,6 +22,7 @@ public class UserService {
     @Autowired
     RoleRepository roleRepository;
     public User findByCellphone(String cellphone) {
+
         return userRepository.findByCellphone(cellphone).orElse(null);
     }
 
@@ -38,7 +39,7 @@ public class UserService {
 
         if(!userRepository.existsById(user.getUserId()))
         {
-            throw new RuntimeException("user doesn't existed !!!");
+            throw new IndexOutOfBoundsException("user doesn't existed !!!");
         }
 
         Optional<User> foundUserByEmail = userRepository.findByEmailMinusItself(user.getEmail(), user.getUserId());

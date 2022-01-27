@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 @RestController
 @RequestMapping(path = "/api/v1.0/authentication")
@@ -28,7 +29,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     // SignIn
     @PostMapping("/login")
-    ResponseEntity<Object> login(@RequestParam(value = "cellphone") String cellphone,
+    ResponseEntity<Object> login(String cellphone,
                                  HttpServletResponse response,
                                  HttpServletRequest request)
     {
@@ -96,7 +97,8 @@ public class AuthenticationController {
                                     HttpServletResponse response,
                                     HttpServletRequest request)
     {
-        String otp = "1123";
+        Scanner scanner = new Scanner(System.in);
+        String otp = scanner.next();
         authenticationService.addOtp(otp, cellphone);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
@@ -107,25 +109,22 @@ public class AuthenticationController {
     }
 
     //VerifyOtp
-    @PostMapping("/verifyOtp")
+    @PostMapping("/verify-otp")
     ResponseEntity<Object> verifyOtp(@RequestParam(value = "cellphone") String cellphone,
-                                     @RequestParam(value = "otp") String otp)
+                                     @RequestParam(value = "otp") String otp,
+                                     HttpServletResponse response,
+                                     HttpServletRequest request)
     {
         if(authenticationService.checkOtp(otp, cellphone))
         {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(
-                            StatusResponse.SUCCESSFUL,
-                            "verify successfully"
-                    )
-            );
+            return login(cellphone, response, request);
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new StandardResponse<>(
-                        StatusResponse.BAD_REQUEST,
-                        "verify failed !!!"
-                )
+            new StandardResponse<>(
+                    StatusResponse.BAD_REQUEST,
+                    "verify failed !!!"
+            )
         );
     }
 }

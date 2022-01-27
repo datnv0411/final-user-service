@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import vn.cmc.du21.userservice.common.restful.PageResponse;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
@@ -43,7 +44,7 @@ public class UserController {
                         StatusResponse.SUCCESSFUL
                         ,"successfully"
                         , listUser
-                        , pageInt
+                        , pageInt + 1
                         , userService.totalPage(pageInt, sizeInt, sort)
                         , userService.totalRecord(pageInt, sizeInt, sort))
         );
@@ -52,6 +53,12 @@ public class UserController {
     //get user by id
     @GetMapping("/user/{id}")
     ResponseEntity<Object> getUser(@PathVariable Long id) throws Throwable {
+
+//        final String uri = "localhost:8080/api/v1.0/authentication/verify";
+//
+//        RestTemplate restTemplate = new RestTemplate();
+//        String result = restTemplate.getForObject(uri, String.class);
+
         UserResponse userResponse =  UserMapper.convertUserToUserResponse(
                 userService.getUserById(id)
         );

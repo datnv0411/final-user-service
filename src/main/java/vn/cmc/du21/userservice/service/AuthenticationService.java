@@ -11,6 +11,7 @@ import vn.cmc.du21.userservice.persistence.internal.repository.SessionRepository
 import vn.cmc.du21.userservice.persistence.internal.repository.UserRepository;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -26,6 +27,8 @@ public class AuthenticationService {
     SessionRepository sessionRepository;
     @Autowired
     OtpRepository otpRepository;
+    private final int MAX_TRY_OTP = 5;
+    private final int TIME_WAIT = 5;
     public Session upsertSession(long userId, long deviceId) {
         User user = userRepository.findById(userId).orElse(null);
         Set<Session> sessions = sessionRepository.findByUserId(userId);
@@ -62,10 +65,24 @@ public class AuthenticationService {
         Otp foundOtp = otpRepository.findByCellphone(cellphone).orElse(null);
         if(foundOtp != null)
         {
+            if(foundOtp.getOtpTry() > MAX_TRY_OTP)
+            {
+                if(foundOtp.getOtpTimeStamp()
+                        .before(Timestamp.valueOf(LocalDateTime.now().plus(TIME_WAIT, ChronoUnit.MINUTES))))
+                {
+                    throw new RuntimeException("Exceeded the allowed number of times, please wait "+TIME_WAIT+" minutes !!!");
+                }
+                else
+                {
+                    foundOtp.setOtpTry(0);
+                    otpRepository.save(foundOtp);
+                }
+            }
             foundOtp.setOtpPass(otp);
             foundOtp.setStatus("Verifying");
             foundOtp.setOtpTry(foundOtp.getOtpTry()+1);
             foundOtp.setOtpTimeStamp(Timestamp.valueOf(LocalDateTime.now().plus(1, ChronoUnit.MINUTES)));
+            otpRepository.save(foundOtp);
         }
         else
         {
@@ -75,6 +92,7 @@ public class AuthenticationService {
             newOtp.setStatus("Verifying");
             newOtp.setOtpTry(1);
             newOtp.setOtpTimeStamp(Timestamp.valueOf(LocalDateTime.now().plus(1, ChronoUnit.MINUTES)));
+            otpRepository.save(newOtp);
         }
     }
 
@@ -85,9 +103,10 @@ public class AuthenticationService {
             if(foundOtp.get().getOtpPass().equals(otp))
             {
                 if(foundOtp.get().getStatus().equals("Verifying")
-                        && foundOtp.get().getOtpTry() <= 5
-                        && foundOtp.get().getOtpTimeStamp().before(Timestamp.valueOf(LocalDateTime.now()))){
+                        && foundOtp.get().getOtpTry() <= MAX_TRY_OTP
+                        && foundOtp.get().getOtpTimeStamp().after(Timestamp.valueOf(LocalDateTime.now()))){
                     foundOtp.get().setStatus("Verified");
+                    foundOtp.get().setOtpTry(0);
                     otpRepository.save(foundOtp.get());
                     return true;
                 }
@@ -127,7 +146,6 @@ public class AuthenticationService {
                  }
              }
          }
-
          return false;
     }
 }
