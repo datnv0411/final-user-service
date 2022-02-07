@@ -60,7 +60,7 @@ public class AuthenticationController {
         );
         
         //create user + session response
-        List userSession = new ArrayList();
+        List<Object> userSession = new ArrayList<>();
         userSession.add(userResponse);
         userSession.add(sessionResponse);
 

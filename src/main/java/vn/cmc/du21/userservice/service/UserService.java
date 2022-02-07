@@ -9,11 +9,11 @@ import vn.cmc.du21.userservice.persistence.internal.entity.Role;
 import vn.cmc.du21.userservice.persistence.internal.entity.User;
 import vn.cmc.du21.userservice.persistence.internal.repository.RoleRepository;
 import vn.cmc.du21.userservice.persistence.internal.repository.UserRepository;
+
+import javax.transaction.Transactional;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -21,11 +21,14 @@ public class UserService {
     UserRepository userRepository;
     @Autowired
     RoleRepository roleRepository;
+
+    @Transactional
     public User findByCellphone(String cellphone) {
 
         return userRepository.findByCellphone(cellphone).orElse(null);
     }
 
+    @Transactional
     public User addUser(User user)
     {
         Role role = roleRepository.findByNameRole("User").orElse(null);
@@ -35,7 +38,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(User user) throws Throwable {
+    @Transactional
+    public User updateUser(User user){
 
         if(!userRepository.existsById(user.getUserId()))
         {
@@ -64,7 +68,8 @@ public class UserService {
 
     }
 
-    public void deleteById(Long id) throws Throwable {
+    @Transactional
+    public void deleteById(Long id) {
         if(!userRepository.existsById(id))
         {
             throw new RuntimeException("user doesn't exists !!!");
@@ -74,14 +79,16 @@ public class UserService {
         }
     }
 
-    public User getUserById(Long id) throws Throwable{
+    @Transactional
+    public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> {
                     throw new RuntimeException("not found !!!");
             }
         );
     }
 
-    public void checkEmailOrCellphoneExists(String email, String cellphone) throws Throwable {
+    @Transactional
+    public void checkEmailOrCellphoneExists(String email, String cellphone) {
         Optional<User> foundUserByEmail = userRepository.findByEmail(email);
         if(foundUserByEmail.isPresent()) {
             throw new RuntimeException("email existed !!!");
@@ -93,17 +100,9 @@ public class UserService {
         }
     }
 
-    public List<User> getAllUsers(int page, int size, String sort)
+    @Transactional
+    public Page<User> getAllUsers(int page, int size, String sort)
     {
-        return userRepository.findAll(PageRequest.of(page, size, Sort.by(sort))).stream().collect(Collectors.toList());
+        return userRepository.findAll(PageRequest.of(page, size, Sort.by(sort)));
     }
-    public int totalPage (int page, int size, String sort){
-        Page<User> pageTT = userRepository.findAll(PageRequest.of(page, size, Sort.by(sort)));
-        return pageTT.getTotalPages();
-    }
-    public Long totalRecord (int page, int size, String sort){
-        Page<User> pageTT = userRepository.findAll(PageRequest.of(page, size, Sort.by(sort)));
-        return pageTT.getTotalElements();
-    }
-
 }

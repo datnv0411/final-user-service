@@ -1,7 +1,6 @@
 package vn.cmc.du21.userservice.persistence.internal.entity;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "SESSION")
@@ -19,7 +18,7 @@ public class Session {
     public Session() {
     }
 
-    public Session(long deviceId, User user) {;
+    public Session(long deviceId, User user) {
         this.deviceId = deviceId;
         this.user = user;
     }
