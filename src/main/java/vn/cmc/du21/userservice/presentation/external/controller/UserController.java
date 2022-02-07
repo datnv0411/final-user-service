@@ -1,10 +1,10 @@
 package vn.cmc.du21.userservice.presentation.external.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import vn.cmc.du21.userservice.common.restful.PageResponse;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
@@ -12,10 +12,6 @@ import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
 import vn.cmc.du21.userservice.presentation.external.request.UserRequest;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.UserService;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping(path = "/api/v1.0")
@@ -28,26 +24,24 @@ public class UserController {
             , @RequestParam(value = "size", required = false) String size
             , @RequestParam(value = "sort",required = false) String sort)
     {
-        if (page==null) page="1";
-        if (size==null) size="10";
-        if (sort==null) sort="userId";
+        if (page==null || !page.chars().allMatch(Character::isDigit) || page.equals("")) page="1";
+        if (size==null || !size.chars().allMatch(Character::isDigit) || size.equals("")) size="10";
+        if (sort==null || sort.equals("")) sort="userId";
 
         int pageInt = Integer.parseInt(page)-1;
         int sizeInt = Integer.parseInt(size);
 
-        List<UserResponse> listUser = userService.getAllUsers(pageInt,sizeInt,sort)
-                .stream()
-                .map(UserMapper::convertUserToUserResponse)
-                .collect(Collectors.toList());
+        Page<UserResponse> listUser = userService.getAllUsers(pageInt,sizeInt,sort)
+                .map(UserMapper::convertUserToUserResponse);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageResponse<Object>(
                         StatusResponse.SUCCESSFUL
                         ,"successfully"
-                        , listUser
+                        , listUser.getContent()
                         , pageInt + 1
-                        , userService.totalPage(pageInt, sizeInt, sort)
-                        , userService.totalRecord(pageInt, sizeInt, sort))
-        );
+                        , listUser.getTotalPages()
+                        , listUser.getTotalElements()
+        ));
     }
 
     //get user by id

@@ -39,7 +39,6 @@ public class User {
         this.gender = gender;
         this.email = email;
         this.cellphone = cellphone;
-        this.roles = roles;
     }
 
     public User(long userId, String fullName, Date dob, String gender, String email, String cellphone, Set<Role> roles, Collection<Address> address, Collection<Session> sessions) {

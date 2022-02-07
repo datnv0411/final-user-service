@@ -1,7 +1,5 @@
 package vn.cmc.du21.userservice.presentation.external.response;
 
-import java.sql.Timestamp;
-
 public class SessionResponse {
     private long sessionId;
     private String token;

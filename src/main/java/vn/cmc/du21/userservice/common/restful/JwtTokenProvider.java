@@ -9,6 +9,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class JwtTokenProvider {
+    private JwtTokenProvider() {
+        throw new IllegalStateException("Utility class");
+    }
+
     // Đoạn JWT_SECRET này là bí mật, chỉ có phía server biết
     private static final String JWT_SECRET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
