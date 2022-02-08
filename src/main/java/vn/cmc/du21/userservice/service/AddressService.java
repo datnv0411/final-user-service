@@ -1,9 +1,7 @@
 package vn.cmc.du21.userservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import vn.cmc.du21.userservice.persistence.internal.entity.Address;
 import vn.cmc.du21.userservice.persistence.internal.entity.Role;
@@ -12,6 +10,7 @@ import vn.cmc.du21.userservice.persistence.internal.repository.AddressRepository
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -64,7 +63,7 @@ public class AddressService {
     public void deleteById(Long id) throws Throwable{
         if(!addressRepository.existsById(id))
         {
-            throw new RuntimeException("user doesn't exists !!!");
+            throw new RuntimeException("address doesn't exists !!!");
         }else
         {
             addressRepository.deleteById(id);
@@ -80,8 +79,13 @@ public class AddressService {
     }
 
     @Transactional
-    public Page<Address> getAllAddress(int page, int size, String sort)
+    public Page<Address> getAllAddress(long userId, int page, int size, String sort)
     {
-        return addressRepository.findAll(PageRequest.of(page, size, Sort.by(sort)));
+        List<Address> addressList = addressRepository.findAddressByUserId(userId);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), addressList.size());
+        return new PageImpl<>(addressList.subList(start, end), pageable, addressList.size());
     }
 }

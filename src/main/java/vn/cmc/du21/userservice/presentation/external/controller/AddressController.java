@@ -9,8 +9,10 @@ import vn.cmc.du21.userservice.common.restful.JwtTokenProvider;
 import vn.cmc.du21.userservice.common.restful.PageResponse;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
+import vn.cmc.du21.userservice.presentation.external.mapper.AddressMapper;
 import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
 import vn.cmc.du21.userservice.presentation.external.request.UserRequest;
+import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.AddressService;
 
@@ -23,11 +25,12 @@ public class AddressController {
     @Autowired
     AddressService addressService;
 
-    //get all address
+    //get all address by userId
     @GetMapping("/address")
     ResponseEntity<Object> getAllAddress(@RequestParam(value = "page", required = false) String page
             , @RequestParam(value = "size", required = false) String size
-            , @RequestParam(value = "sort",required = false) String sort)
+            , @RequestParam(value = "sort",required = false) String sort
+            , HttpServletResponse response, HttpServletRequest request)
     {
         if (page==null || !page.chars().allMatch(Character::isDigit) || page.equals("")) page="1";
         if (size==null || !size.chars().allMatch(Character::isDigit) || size.equals("")) size="10";
@@ -36,22 +39,24 @@ public class AddressController {
         int pageInt = Integer.parseInt(page)-1;
         int sizeInt = Integer.parseInt(size);
 
-        Page<UserResponse> listUser = addressService.getAllAddress(pageInt,sizeInt,sort)
-                .map(UserMapper::convertUserToUserResponse);
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+
+        Page<AddressResponse> listAddress = addressService.getAllAddress(userLogin.getUserId(), pageInt, sizeInt, sort)
+                .map(AddressMapper::convertAddressToAddressResponse);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageResponse<Object>(
                         StatusResponse.SUCCESSFUL
                         ,"successfully"
-                        , listUser.getContent()
+                        , listAddress.getContent()
                         , pageInt + 1
-                        , listUser.getTotalPages()
-                        , listUser.getTotalElements()
+                        , listAddress.getTotalPages()
+                        , listAddress.getTotalElements()
                 ));
     }
 
     //get address by id
     @GetMapping("/address/{addressId}")
-    ResponseEntity<Object> getUser(@PathVariable Long userId,
+    ResponseEntity<Object> getUser(@PathVariable Long addressId,
                                    HttpServletResponse response,
                                    HttpServletRequest request) throws Throwable {
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
