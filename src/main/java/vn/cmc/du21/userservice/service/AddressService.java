@@ -30,33 +30,8 @@ public class AddressService {
     }
 
     @Transactional
-    public Address updateAddress(Address address) throws Throwable{
-
-        if(!addressRepository.existsById(address.getAddressId()))
-        {
-            throw new IndexOutOfBoundsException("address doesn't existed !!!");
-        }
-
-        Optional<Address> foundUserByEmail = addressRepository.findByEmailMinusItself(user.getEmail(), user.getUserId());
-        if(foundUserByEmail.isPresent()) {
-            throw new RuntimeException("email existed !!!");
-        }
-
-        Optional<User> foundUserByCellphone = addressRepository.findBCellphoneMinusItself(user.getCellphone(), user.getUserId());
-        if(foundUserByCellphone.isPresent()) {
-            throw new RuntimeException("cellphone existed !!!");
-        }
-
-        return addressRepository.findById(user.getUserId())
-                .map(u -> {
-                    u = user;
-                    addressRepository.save(u);
-                    return u;
-                })
-                .orElseThrow(()->{
-                    throw new RuntimeException("Cannot update user");
-                });
-
+    public Address updateAddress(Address address){
+        addressRepository.findUserId()
     }
 
     @Transactional
