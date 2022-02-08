@@ -60,15 +60,14 @@ public class AddressController {
                                    HttpServletRequest request) throws Throwable {
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
-        userService.checkUserLogin(userLogin, userId);
-        UserResponse userResponse =  UserMapper.convertUserToUserResponse(
-                userService.getUserById(userId)
+        AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
+                addressService.getAddressByAddressId(userLogin.getUserId(), addressId))
         );
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
                         "found !!!",
-                        userResponse
+                        addressResponse
                 )
         );
     }

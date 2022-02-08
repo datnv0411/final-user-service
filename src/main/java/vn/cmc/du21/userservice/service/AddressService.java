@@ -71,17 +71,14 @@ public class AddressService {
     }
 
     @Transactional
-    public Address getAddressById(Long id) throws Throwable{
-        return addressRepository.findById(id).orElseThrow(() -> {
-                    throw new RuntimeException("not found !!!");
-                }
-        );
+    public Address getAddressByAddressId(long userId, long addressId) {
+        return addressRepository.findByAddressIdAndUserId(userId, addressId).orElse(null);
     }
 
     @Transactional
     public Page<Address> getAllAddress(long userId, int page, int size, String sort)
     {
-        List<Address> addressList = addressRepository.findAddressByUserId(userId);
+        List<Address> addressList = addressRepository.findByUserId(userId);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         final int start = (int)pageable.getOffset();
