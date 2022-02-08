@@ -12,6 +12,7 @@ import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
 import vn.cmc.du21.userservice.presentation.external.request.UserRequest;
+import vn.cmc.du21.userservice.presentation.external.request.validator.UserRequestValidator;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.UserService;
 
@@ -97,8 +98,10 @@ public class UserController {
         try {
             UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
             userService.checkUserLogin(userLogin, userId);
-
             userRequest.setUserId(userId);
+
+            UserRequestValidator.upsertRequestValidate(userRequest);
+            
             UserResponse userResponse = UserMapper.convertUserToUserResponse(
                     userService.updateUser(UserMapper.convertUserRequestToUser(userRequest)
                     ));

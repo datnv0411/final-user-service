@@ -52,21 +52,18 @@ public class UserService {
                 throw new RuntimeException("email existed !!!");
         }
 
-        Optional<User> foundUserByCellphone = userRepository.findBCellphoneMinusItself(user.getCellphone(), user.getUserId());
-        if(foundUserByCellphone.isPresent()) {
-                throw new RuntimeException("cellphone existed !!!");
-        }
-
         return userRepository.findById(user.getUserId())
                 .map(u -> {
-                    u = user;
+                    u.setFullName(user.getFullName());
+                    u.setDob(user.getDob());
+                    u.setGender(user.getGender());
+                    u.setEmail(user.getEmail());
                     userRepository.save(u);
                     return u;
                 })
                 .orElseThrow(()->{
                     throw new RuntimeException("Cannot update user");
                 });
-
     }
 
     @Transactional

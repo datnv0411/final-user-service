@@ -28,7 +28,8 @@ public class AuthenticationService {
     @Autowired
     OtpRepository otpRepository;
     private static final int MAX_TRY_OTP = 5;
-    private static final int TIME_WAIT = 30;
+    private static final int TIME_WAIT = 5; // MINUTES
+    private static final int TIMESTAMP_OTP = 1; // MINUTES
     private static final String STATUS_ACTIVE = "Active";
     private static final String STATUS_VERIFYING = "Verifying";
 
@@ -68,27 +69,26 @@ public class AuthenticationService {
 
     @Transactional
     public void addOtp(String otp, String cellphone) {
-        Otp foundOtp = otpRepository.findByCellphone(cellphone).orElse(null);
-        if(foundOtp != null)
+        Optional<Otp> foundOtp = otpRepository.findByCellphone(cellphone);
+        if(foundOtp.isPresent())
         {
-            if(foundOtp.getOtpTry() > MAX_TRY_OTP)
+            if(foundOtp.get().getOtpTry() > MAX_TRY_OTP)
             {
-                if(foundOtp.getOtpTimeStamp()
-                        .before(Timestamp.valueOf(LocalDateTime.now().plus(TIME_WAIT, ChronoUnit.MINUTES))))
+                if(foundOtp.get().getOtpTimeStamp()
+                        .after(Timestamp.valueOf(LocalDateTime.now().minus(TIME_WAIT, ChronoUnit.MINUTES))))
                 {
                     throw new SecurityException("Exceeded the allowed number of times, please wait "+TIME_WAIT+" minutes !!!");
                 }
                 else
                 {
-                    foundOtp.setOtpTry(0);
-                    otpRepository.save(foundOtp);
+                    foundOtp.get().setOtpTry(0);
+                    otpRepository.save(foundOtp.get());
                 }
             }
-            foundOtp.setOtpPass(otp);
-            foundOtp.setStatus(STATUS_VERIFYING);
-            foundOtp.setOtpTry(foundOtp.getOtpTry()+1);
-            foundOtp.setOtpTimeStamp(Timestamp.valueOf(LocalDateTime.now().plus(1, ChronoUnit.MINUTES)));
-            otpRepository.save(foundOtp);
+            foundOtp.get().setOtpPass(otp);
+            foundOtp.get().setStatus(STATUS_VERIFYING);
+            foundOtp.get().setOtpTimeStamp(Timestamp.valueOf(LocalDateTime.now().plus(TIMESTAMP_OTP, ChronoUnit.MINUTES)));
+            otpRepository.save(foundOtp.get());
         }
         else
         {
@@ -96,17 +96,18 @@ public class AuthenticationService {
             newOtp.setCellphone(cellphone);
             newOtp.setOtpPass(otp);
             newOtp.setStatus(STATUS_VERIFYING);
-            newOtp.setOtpTry(1);
-            newOtp.setOtpTimeStamp(Timestamp.valueOf(LocalDateTime.now().plus(1, ChronoUnit.MINUTES)));
+            newOtp.setOtpTry(0);
+            newOtp.setOtpTimeStamp(Timestamp.valueOf(LocalDateTime.now().plus(TIMESTAMP_OTP, ChronoUnit.MINUTES)));
             otpRepository.save(newOtp);
         }
     }
 
     @Transactional
-    public boolean checkOtp(String otp, String cellphone) {
+    public String checkOtp(String otp, String cellphone) {
         Optional<Otp> foundOtp = otpRepository.findByCellphone(cellphone);
         if(foundOtp.isPresent())
         {
+            foundOtp.get().setOtpTry( foundOtp.get().getOtpTry() + 1);
             if(foundOtp.get().getOtpPass().equals(otp))
             {
                 if(foundOtp.get().getStatus().equals(STATUS_VERIFYING)
@@ -115,19 +116,14 @@ public class AuthenticationService {
                     foundOtp.get().setStatus("Verified");
                     foundOtp.get().setOtpTry(0);
                     otpRepository.save(foundOtp.get());
-                    return true;
+                    return "true";
                 }
-                foundOtp.get().setStatus("Failed");
                 otpRepository.save(foundOtp.get());
-                return false;
+                return "Otp not available. Please try again !!!";
             }
         }
-        else
-        {
-            return false;
-        }
 
-        return false;
+        return "Incorrect. Please try again !!!";
     }
 
     @Transactional
