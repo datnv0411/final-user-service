@@ -1,13 +1,8 @@
-package vn.cmc.du21.userservice.persistence.internal.entity;
+package vn.cmc.du21.userservice.presentation.external.request;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "ADDRESS")
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class AddrressRequest {
     private long addressId;
+    private long userId;
     private boolean isDefault;
     private String typeAddress;
     private String fullName;
@@ -17,28 +12,12 @@ public class Address {
     private String town;
     private String specificAddress;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
-
-    public Address() {
+    public AddrressRequest() {
     }
 
-    public Address(long addressId, boolean isDefault, String typeAddress, String fullName, String cellphone, String province, String district, String town, String specificAddress, User user) {
+    public AddrressRequest(long addressId, long userId, boolean isDefault, String typeAddress, String fullName, String cellphone, String province, String district, String town, String specificAddress) {
         this.addressId = addressId;
-        this.isDefault = isDefault;
-        this.typeAddress = typeAddress;
-        this.fullName = fullName;
-        this.cellphone = cellphone;
-        this.province = province;
-        this.district = district;
-        this.town = town;
-        this.specificAddress = specificAddress;
-        this.user = user;
-    }
-
-    public Address(long addressId, boolean isDefault, String typeAddress, String fullName, String cellphone, String province, String district, String town, String specificAddress) {
-        this.addressId = addressId;
+        this.userId = userId;
         this.isDefault = isDefault;
         this.typeAddress = typeAddress;
         this.fullName = fullName;
@@ -55,6 +34,14 @@ public class Address {
 
     public void setAddressId(long addressId) {
         this.addressId = addressId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public boolean isDefault() {
@@ -119,13 +106,5 @@ public class Address {
 
     public void setSpecificAddress(String specificAddress) {
         this.specificAddress = specificAddress;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

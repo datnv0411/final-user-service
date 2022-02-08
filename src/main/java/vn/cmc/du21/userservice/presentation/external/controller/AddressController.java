@@ -11,7 +11,6 @@ import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.AddressMapper;
 import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
-import vn.cmc.du21.userservice.presentation.external.request.UserRequest;
 import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.AddressService;
@@ -76,7 +75,7 @@ public class AddressController {
 
     //insert address
     @PostMapping("/address")
-    ResponseEntity<Object> addUser(@RequestBody UserRequest userRequest) throws Throwable {
+    ResponseEntity<Object> addAddress(@RequestBody  userRequest) throws Throwable {
 
         userService.checkEmailOrCellphoneExists(userRequest.getEmail(), userRequest.getCellphone());
 
@@ -93,52 +92,5 @@ public class AddressController {
         );
     }
 
-    //update address
-    @PutMapping("/address/{addressId}")
-    ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long userId,
-                                      HttpServletResponse response,
-                                      HttpServletRequest request)
-    {
-        try {
-            UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-            userService.checkUserLogin(userLogin, userId);
 
-            userRequest.setUserId(userId);
-            UserResponse userResponse = UserMapper.convertUserToUserResponse(
-                    userService.updateUser(UserMapper.convertUserRequestToUser(userRequest)
-                    ));
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(
-                            StatusResponse.SUCCESSFUL,
-                            "successfully",
-                            userResponse
-                    ));
-        }
-        catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new StandardResponse<>(
-                            StatusResponse.BAD_REQUEST,
-                            e.getMessage()
-                    ));
-        }
-    }
-
-    //delete address
-    @DeleteMapping("/address/{addressId}")
-    ResponseEntity<Object> deleteUser(@PathVariable Long userId,
-                                      HttpServletResponse response,
-                                      HttpServletRequest request)
-    {
-        try{
-
-            userService.deleteById(userId);
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(StatusResponse.SUCCESSFUL, "User deleted")
-            );
-        }catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new StandardResponse<>(StatusResponse.NOT_FOUND, e.getMessage())
-            );
-        }
-    }
 }
