@@ -9,6 +9,7 @@ import vn.cmc.du21.userservice.persistence.internal.entity.Role;
 import vn.cmc.du21.userservice.persistence.internal.entity.User;
 import vn.cmc.du21.userservice.persistence.internal.repository.RoleRepository;
 import vn.cmc.du21.userservice.persistence.internal.repository.UserRepository;
+import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
@@ -39,7 +40,7 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(User user){
+    public User updateUser(User user) throws Throwable{
 
         if(!userRepository.existsById(user.getUserId()))
         {
@@ -69,7 +70,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(Long id) throws Throwable{
         if(!userRepository.existsById(id))
         {
             throw new RuntimeException("user doesn't exists !!!");
@@ -80,7 +81,7 @@ public class UserService {
     }
 
     @Transactional
-    public User getUserById(Long id) {
+    public User getUserById(Long id) throws Throwable{
         return userRepository.findById(id).orElseThrow(() -> {
                     throw new RuntimeException("not found !!!");
             }
@@ -104,5 +105,12 @@ public class UserService {
     public Page<User> getAllUsers(int page, int size, String sort)
     {
         return userRepository.findAll(PageRequest.of(page, size, Sort.by(sort)));
+    }
+
+    public void checkUserLogin(UserResponse userLogin, Long userId) {
+        if(userLogin.getUserId() != userId)
+        {
+            throw new RuntimeException("You can not access");
+        }
     }
 }

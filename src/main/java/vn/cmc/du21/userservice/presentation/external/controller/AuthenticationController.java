@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.cmc.du21.userservice.common.RandomOtpUtil;
+import vn.cmc.du21.userservice.common.SmsSender;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.SessionMapper;
@@ -97,13 +99,23 @@ public class AuthenticationController {
                                     HttpServletResponse response,
                                     HttpServletRequest request)
     {
-        Scanner scanner = new Scanner(System.in);
-        String otp = scanner.next();
-        authenticationService.addOtp(otp, cellphone);
-        return ResponseEntity.status(HttpStatus.OK).body(
+        String otp = RandomOtpUtil.createOtp();
+
+        if(SmsSender.sendOtp(cellphone, otp))
+        {
+            authenticationService.addOtp(otp, cellphone);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new StandardResponse<>(
+                            StatusResponse.SUCCESSFUL,
+                            "Check your phone"
+                    )
+            );
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new StandardResponse<>(
-                        StatusResponse.SUCCESSFUL,
-                        "Check your phone"
+                        StatusResponse.BAD_REQUEST,
+                        "can not send otp"
                 )
         );
     }
