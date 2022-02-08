@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
@@ -22,20 +23,14 @@ public class AuthorizationController {
     AuthenticationService authenticationService;
     // Verify
     @GetMapping("/verify")
-    ResponseEntity<Object> verify(HttpServletResponse response, HttpServletRequest request)
-    {
-        String[] arr = request.getHeader("Authorization").split(" ");
-        String token = arr[1];
+    ResponseEntity<Object> verify(@RequestParam(value = "token") String token,
+                                  HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
         if(authenticationService.getUserByToken(token) != null)
         {
             UserResponse userResponse = UserMapper.convertUserToUserResponse(authenticationService.getUserByToken(token));
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(
-                            StatusResponse.SUCCESSFUL,
-                            "successful authentication ",
                             userResponse
-                    )
             );
         }
 

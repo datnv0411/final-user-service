@@ -59,6 +59,13 @@
 			<version>0.11.2</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- The Twilio Java Helper Library -->
+		<dependency>
+			<groupId>com.twilio.sdk</groupId>
+			<artifactId>twilio</artifactId>
+			<version>8.25.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

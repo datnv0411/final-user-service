@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import vn.cmc.du21.userservice.common.restful.JwtTokenProvider;
 import vn.cmc.du21.userservice.common.restful.PageResponse;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
@@ -12,6 +14,9 @@ import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
 import vn.cmc.du21.userservice.presentation.external.request.UserRequest;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.UserService;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping(path = "/api/v1.0")
@@ -45,16 +50,15 @@ public class UserController {
     }
 
     //get user by id
-    @GetMapping("/user/{id}")
-    ResponseEntity<Object> getUser(@PathVariable Long id) throws Throwable {
+    @GetMapping("/user/{userId}")
+    ResponseEntity<Object> getUser(@PathVariable Long userId,
+                                   HttpServletResponse response,
+                                   HttpServletRequest request) throws Throwable {
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
-//        final String uri = "localhost:8080/api/v1.0/authentication/verify";
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//        String result = restTemplate.getForObject(uri, String.class);
-
+        userService.checkUserLogin(userLogin, userId);
         UserResponse userResponse =  UserMapper.convertUserToUserResponse(
-                userService.getUserById(id)
+                userService.getUserById(userId)
         );
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
@@ -85,11 +89,16 @@ public class UserController {
     }
 
     //update user
-    @PutMapping("/user/{id}")
-    ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long id)
+    @PutMapping("/user/{userId}")
+    ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long userId,
+                                      HttpServletResponse response,
+                                      HttpServletRequest request)
     {
         try {
-            userRequest.setUserId(id);
+            UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+            userService.checkUserLogin(userLogin, userId);
+
+            userRequest.setUserId(userId);
             UserResponse userResponse = UserMapper.convertUserToUserResponse(
                     userService.updateUser(UserMapper.convertUserRequestToUser(userRequest)
                     ));
@@ -110,11 +119,14 @@ public class UserController {
     }
 
     //delete user
-    @DeleteMapping("/user/{id}")
-    ResponseEntity<Object> deleteUser(@PathVariable Long id)
+    @DeleteMapping("/user/{userId}")
+    ResponseEntity<Object> deleteUser(@PathVariable Long userId,
+                                      HttpServletResponse response,
+                                      HttpServletRequest request)
     {
         try{
-            userService.deleteById(id);
+
+            userService.deleteById(userId);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new StandardResponse<>(StatusResponse.SUCCESSFUL, "User deleted")
             );
