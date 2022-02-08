@@ -28,7 +28,7 @@ public class AuthenticationService {
     @Autowired
     OtpRepository otpRepository;
     private static final int MAX_TRY_OTP = 5;
-    private static final int TIME_WAIT = 5;
+    private static final int TIME_WAIT = 30;
     private static final String STATUS_ACTIVE = "Active";
     private static final String STATUS_VERIFYING = "Verifying";
 
@@ -56,7 +56,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public void disableToken(String token) {
+    public void disableToken(String token) throws Throwable{
         Session foundSession = sessionRepository.findByToken(token)
                 .orElseThrow(() -> {
                         throw new IndexOutOfBoundsException("Token is not available");
@@ -131,7 +131,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public User getUserByToken(String token) {
+    public User getUserByToken(String token) throws Throwable{
         if(checkTokenActive(token))
         {
             long sessionId = JwtTokenProvider.getSessionIdFromJWT(token);

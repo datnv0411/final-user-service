@@ -3,7 +3,10 @@ package vn.cmc.du21.userservice.common.restful;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.web.client.RestTemplate;
+import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -51,5 +54,16 @@ public class JwtTokenProvider {
                 .getBody();
 
         return claims.getExpiration();
+    }
+
+    public static UserResponse getInfoUserFromToken(HttpServletRequest request)
+    {
+        String[] arr = request.getHeader("Authorization").split(" ");
+        String token = arr[1];
+        final String uri = "http://localhost:8888/api/v1.0/authentication/verify?token=" + token;
+
+        RestTemplate restTemplate = new RestTemplate();
+        UserResponse userLogin = restTemplate.getForObject(uri, UserResponse.class);
+        return userLogin;
     }
 }
