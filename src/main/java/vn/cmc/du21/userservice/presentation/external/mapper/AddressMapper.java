@@ -1,13 +1,13 @@
 package vn.cmc.du21.userservice.presentation.external.mapper;
 
 import vn.cmc.du21.userservice.persistence.internal.entity.Address;
-import vn.cmc.du21.userservice.presentation.external.request.AddrressRequest;
+import vn.cmc.du21.userservice.presentation.external.request.AddressRequest;
 import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 
 public class AddressMapper {
     private AddressMapper() {super();}
 
-    public static Address convertAddressRequestToAddress (AddrressRequest addrressRequest){
+    public static Address convertAddressRequestToAddress (AddressRequest addrressRequest){
         return new Address(addrressRequest.getAddressId(), addrressRequest.isDefault()
         , addrressRequest.getTypeAddress(), addrressRequest.getFullName()
         , addrressRequest.getCellphone(), addrressRequest.getProvince()
