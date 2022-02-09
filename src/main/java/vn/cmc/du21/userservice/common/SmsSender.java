@@ -10,7 +10,7 @@ public class SmsSender {
     public static final String AUTH_TOKEN = System.getenv("TWILIO_AUTH_TOKEN");
 
     public static boolean sendOtp(String phoneNumber, String Otp)  {
-        Twilio.init("AC8e9cb695e41ebe1ce521956979647ca0", "f368f8376f71ac4ff0967f2b2dbed8f8");
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
         try {
             Message message = Message.creator(
                             new com.twilio.type.PhoneNumber("+84"+phoneNumber),

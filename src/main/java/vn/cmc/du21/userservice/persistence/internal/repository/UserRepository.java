@@ -12,10 +12,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Optional<User> findByCellphone(String cellphone);
+    Optional<User> findByUserId( long userId);
 
     @Query(value = "SELECT * FROM USER WHERE email = :email AND userId != :userId", nativeQuery = true)
     Optional<User> findByEmailMinusItself(@Param(value = "email") String email, @Param(value = "userId") long userId);
-
-    @Query(value = "SELECT * FROM USER WHERE cellphone = :cellphone AND userId != :userId", nativeQuery = true)
-    Optional<User> findBCellphoneMinusItself(@Param(value = "cellphone") String cellphone, @Param(value = "userId") long userId);
 }

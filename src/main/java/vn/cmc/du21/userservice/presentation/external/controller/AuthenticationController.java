@@ -101,7 +101,8 @@ public class AuthenticationController {
     {
         String otp = RandomOtpUtil.createOtp();
 
-        if(SmsSender.sendOtp(cellphone, otp))
+       // if(SmsSender.sendOtp(cellphone, otp))
+        if(true)
         {
             authenticationService.addOtp(otp, cellphone);
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -127,7 +128,8 @@ public class AuthenticationController {
                                      HttpServletResponse response,
                                      HttpServletRequest request)
     {
-        if(authenticationService.checkOtp(otp, cellphone))
+        String result = authenticationService.checkOtp(otp, cellphone);
+        if(result.equals("true"))
         {
             return login(cellphone, response, request);
         }
@@ -135,7 +137,7 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             new StandardResponse<>(
                     StatusResponse.BAD_REQUEST,
-                    "verify failed !!!"
+                    result
             )
         );
     }
