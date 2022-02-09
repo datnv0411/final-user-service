@@ -4,16 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import vn.cmc.du21.userservice.persistence.internal.entity.Address;
-import vn.cmc.du21.userservice.persistence.internal.entity.Role;
 import vn.cmc.du21.userservice.persistence.internal.entity.User;
 import vn.cmc.du21.userservice.persistence.internal.repository.AddressRepository;
-import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AddressService {
@@ -25,15 +21,31 @@ public class AddressService {
     @Transactional
     public Address addAddress(Address address, long userId)
     {
-        address.setUser(userService.findByUserId(userId));
+        User userLogin = userService.findByUserId(userId);
+        address.setUser(userLogin);
         List<Address> addressList = addressRepository.findByUserId(userId);
+
         if(addressList.isEmpty()) address.setDefault(true);
+        else
+        {
+            if(address.isDefault())
+            {
+                for(Address item : addressList)
+                {
+                    if(item.isDefault())
+                    {
+                        item.setDefault(false);
+                        addressRepository.save(item);
+                    }
+                }
+            }
+        }
         return addressRepository.save(address);
     }
 
     @Transactional
     public Address updateAddress(Address address, long userId){
-        Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(address.getAddressId(), userId);
+        Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(userId, address.getAddressId());
 
         if(foundAddress.isPresent())
         {
@@ -67,8 +79,10 @@ public class AddressService {
     }
 
     @Transactional
-    public Address getAddressByAddressId(long userId, long addressId) {
-        return addressRepository.findByAddressIdAndUserId(userId, addressId).orElse(null);
+    public Address getAddressByAddressId(long userId, long addressId) throws Throwable{
+        return addressRepository.findByAddressIdAndUserId(userId, addressId).orElseThrow(
+                () -> {throw new RuntimeException("Address doesn't exist !!");}
+        );
     }
 
     @Transactional
@@ -84,7 +98,7 @@ public class AddressService {
 
     @Transactional
     public void deleteByAddressId(long addressId, long userId) {
-        Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(addressId, userId);
+        Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(userId, addressId);
         if(foundAddress.isPresent())
         {
             if(foundAddress.get().isDefault())
@@ -95,7 +109,7 @@ public class AddressService {
         }
         else
         {
-            throw new RuntimeException("address doesn't exists !!!");
+            throw new RuntimeException("Address doesn't exist !!!");
         }
     }
 }
