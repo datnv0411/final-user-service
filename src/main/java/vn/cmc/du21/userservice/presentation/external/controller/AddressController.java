@@ -53,7 +53,7 @@ public class AddressController {
                 ));
     }
 
-    //get address by id
+    //get address by addressId and userId
     @GetMapping("/address/{addressId}")
     ResponseEntity<Object> getUser(@PathVariable Long addressId,
                                    HttpServletResponse response,
