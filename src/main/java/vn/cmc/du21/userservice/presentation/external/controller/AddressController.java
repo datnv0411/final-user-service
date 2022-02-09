@@ -65,7 +65,7 @@ public class AddressController {
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
-                addressService.getAddressByAddressId(userLogin.getUserId(), addressId))
+                addressService.getAddressByAddressId(userLogin.getUserId(), addressId)
         );
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
@@ -76,21 +76,25 @@ public class AddressController {
         );
     }
 
+
     //insert address
     @PostMapping("/address")
-    ResponseEntity<Object> addAddress(@RequestBody  userRequest) throws Throwable {
+    ResponseEntity<Object> addAddress(
+             @RequestBody AddressRequest addressRequest, HttpServletResponse response
+    , HttpServletRequest request) throws Throwable {
 
-        userService.checkEmailOrCellphoneExists(userRequest.getEmail(), userRequest.getCellphone());
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
-        UserResponse userResponse =  UserMapper.convertUserToUserResponse(
-                userService.addUser(UserMapper.convertUserRequestToUser(userRequest))
+
+        AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
+                addressService.addAddress(AddressMapper.convertAddressRequestToAddress(addressRequest), userLogin.getUserId())
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
                         "create user successfully !",
-                        userResponse
+                        addressResponse
                 )
         );
     }

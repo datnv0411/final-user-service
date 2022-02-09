@@ -18,9 +18,11 @@ import java.util.Set;
 public class AddressService {
     @Autowired
     AddressRepository addressRepository;
+    @Autowired
+    UserService userService;
 
     @Transactional
-    public Address addAddress(Address address)
+    public Address addAddress(Address address, long userId)
     {
         Role role = roleRepository.findByNameRole("User").orElse(null);
         Set<Role> roles = new HashSet<>();
@@ -32,6 +34,11 @@ public class AddressService {
     @Transactional
     public Address updateAddress(Address address){
         addressRepository.findUserId()
+
+        address.setUser(userService.findByUserId(userId));
+        List<Address> addressList = addressRepository.findByUserId(userId);
+        if(addressList.isEmpty()) address.setDefault(true);
+        return addressRepository.save(address);
     }
 
     @Transactional
@@ -60,4 +67,5 @@ public class AddressService {
         final int end = Math.min((start + pageable.getPageSize()), addressList.size());
         return new PageImpl<>(addressList.subList(start, end), pageable, addressList.size());
     }
+
 }
