@@ -4,15 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import vn.cmc.du21.userservice.persistence.internal.entity.Address;
-import vn.cmc.du21.userservice.persistence.internal.entity.Role;
-import vn.cmc.du21.userservice.persistence.internal.entity.User;
 import vn.cmc.du21.userservice.persistence.internal.repository.AddressRepository;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AddressService {

@@ -7,12 +7,12 @@ import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 public class AddressMapper {
     private AddressMapper() {super();}
 
-    public static Address convertAddressRequestToAddress (AddressRequest addrressRequest){
-        return new Address(addrressRequest.getAddressId(), addrressRequest.isDefault()
-        , addrressRequest.getTypeAddress(), addrressRequest.getFullName()
-        , addrressRequest.getCellphone(), addrressRequest.getProvince()
-        , addrressRequest.getDistrict(), addrressRequest.getTown()
-        , addrressRequest.getSpecificAddress());
+    public static Address convertAddressRequestToAddress (AddressRequest addressRequest){
+        return new Address(addressRequest.getAddressId(), addressRequest.isDefault()
+        , addressRequest.getTypeAddress(), addressRequest.getFullName()
+        , addressRequest.getCellphone(), addressRequest.getProvince()
+        , addressRequest.getDistrict(), addressRequest.getTown()
+        , addressRequest.getSpecificAddress());
     }
 
     public static AddressResponse convertAddressToAddressResponse(Address address) {
