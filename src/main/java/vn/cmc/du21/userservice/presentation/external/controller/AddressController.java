@@ -110,13 +110,15 @@ public class AddressController {
             UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
             addressRequest.setUserId(userLogin.getUserId());
             AddressResponse addressResponse = AddressMapper.convertAddressToAddressResponse(
-                    addressService.updateAddress(AddressMapper.convertAddressRequestToAddress(addressRequest),  userLogin.getUserId())
+                    addressService.updateAddress(
+                            AddressMapper.convertAddressRequestToAddress(addressRequest),
+                            userLogin.getUserId())
             );
             return ResponseEntity.status(HttpStatus.OK).body(
                     new StandardResponse<>(
                             StatusResponse.SUCCESSFUL,
                             "successfully",
-                            userResponse
+                            addressResponse
                     ));
         }
         catch (Throwable e) {
@@ -130,15 +132,15 @@ public class AddressController {
 
     //delete address
     @DeleteMapping("/address/{addressId}")
-    ResponseEntity<Object> deleteUser(@PathVariable Long userId,
+    ResponseEntity<Object> deleteAddress(@PathVariable Long addressId,
                                       HttpServletResponse response,
                                       HttpServletRequest request)
     {
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
         try{
-
-            userService.deleteById(userId);
+            addressService.deleteByAddressId(addressId, userLogin.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(StatusResponse.SUCCESSFUL, "User deleted")
+                    new StandardResponse<>(StatusResponse.SUCCESSFUL, "Address deleted")
             );
         }catch (Throwable e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(

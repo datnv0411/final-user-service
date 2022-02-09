@@ -7,6 +7,7 @@ import vn.cmc.du21.userservice.persistence.internal.entity.Address;
 import vn.cmc.du21.userservice.persistence.internal.entity.Role;
 import vn.cmc.du21.userservice.persistence.internal.entity.User;
 import vn.cmc.du21.userservice.persistence.internal.repository.AddressRepository;
+import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
@@ -24,17 +25,6 @@ public class AddressService {
     @Transactional
     public Address addAddress(Address address, long userId)
     {
-        Role role = roleRepository.findByNameRole("User").orElse(null);
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-        user.setRoles(roles);
-        return addressRepository.save(user);
-    }
-
-    @Transactional
-    public Address updateAddress(Address address){
-        addressRepository.findUserId()
-
         address.setUser(userService.findByUserId(userId));
         List<Address> addressList = addressRepository.findByUserId(userId);
         if(addressList.isEmpty()) address.setDefault(true);
@@ -42,14 +32,38 @@ public class AddressService {
     }
 
     @Transactional
-    public void deleteById(Long id) throws Throwable{
-        if(!addressRepository.existsById(id))
+    public Address updateAddress(Address address, long userId){
+        Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(address.getAddressId(), userId);
+
+        if(foundAddress.isPresent())
         {
-            throw new RuntimeException("address doesn't exists !!!");
-        }else
-        {
-            addressRepository.deleteById(id);
+            foundAddress.get().setDefault(address.isDefault());
+            foundAddress.get().setTypeAddress(address.getTypeAddress());
+            foundAddress.get().setFullName(address.getFullName());
+            foundAddress.get().setCellphone(address.getCellphone());
+            foundAddress.get().setProvince(address.getProvince());
+            foundAddress.get().setDistrict(address.getDistrict());
+            foundAddress.get().setTown(address.getTown());
+            foundAddress.get().setSpecificAddress(address.getSpecificAddress());
+
+            if(foundAddress.get().isDefault())
+            {
+                List<Address> addressList = addressRepository.findByUserId(userId);
+                for(Address item : addressList)
+                {
+                    if(item.getAddressId() != foundAddress.get().getAddressId()
+                        && item.isDefault())
+                    {
+                        item.setDefault(false);
+                        addressRepository.save(item);
+                    }
+                }
+            }
+            addressRepository.save(foundAddress.get());
+            return foundAddress.get();
         }
+
+        return null;
     }
 
     @Transactional
@@ -68,4 +82,20 @@ public class AddressService {
         return new PageImpl<>(addressList.subList(start, end), pageable, addressList.size());
     }
 
+    @Transactional
+    public void deleteByAddressId(long addressId, long userId) {
+        Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(addressId, userId);
+        if(foundAddress.isPresent())
+        {
+            if(foundAddress.get().isDefault())
+            {
+                throw new RuntimeException("Default address can not be deleted !!!");
+            }
+            addressRepository.deleteById(foundAddress.get().getAddressId());
+        }
+        else
+        {
+            throw new RuntimeException("address doesn't exists !!!");
+        }
+    }
 }
