@@ -18,45 +18,17 @@ import java.util.Set;
 public class AddressService {
     @Autowired
     AddressRepository addressRepository;
+    @Autowired
+    UserService userService;
 
     @Transactional
-    public Address addAddress(Address address)
+    public Address addAddress(Address address, long userId)
     {
-        Role role = roleRepository.findByNameRole("User").orElse(null);
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-        user.setRoles(roles);
-        return addressRepository.save(user);
-    }
 
-    @Transactional
-    public Address updateAddress(Address address) throws Throwable{
-
-        if(!addressRepository.existsById(address.getAddressId()))
-        {
-            throw new IndexOutOfBoundsException("address doesn't existed !!!");
-        }
-
-        Optional<Address> foundUserByEmail = addressRepository.findByEmailMinusItself(user.getEmail(), user.getUserId());
-        if(foundUserByEmail.isPresent()) {
-            throw new RuntimeException("email existed !!!");
-        }
-
-        Optional<User> foundUserByCellphone = addressRepository.findBCellphoneMinusItself(user.getCellphone(), user.getUserId());
-        if(foundUserByCellphone.isPresent()) {
-            throw new RuntimeException("cellphone existed !!!");
-        }
-
-        return addressRepository.findById(user.getUserId())
-                .map(u -> {
-                    u = user;
-                    addressRepository.save(u);
-                    return u;
-                })
-                .orElseThrow(()->{
-                    throw new RuntimeException("Cannot update user");
-                });
-
+        address.setUser(userService.findByUserId(userId));
+        List<Address> addressList = addressRepository.findByUserId(userId);
+        if(addressList.isEmpty()) address.setDefault(true);
+        return addressRepository.save(address);
     }
 
     @Transactional
@@ -85,4 +57,5 @@ public class AddressService {
         final int end = Math.min((start + pageable.getPageSize()), addressList.size());
         return new PageImpl<>(addressList.subList(start, end), pageable, addressList.size());
     }
+
 }

@@ -1,6 +1,6 @@
 package vn.cmc.du21.userservice.presentation.external.request;
 
-public class AddrressRequest {
+public class AddressRequest {
     private long addressId;
     private long userId;
     private boolean isDefault;
@@ -12,10 +12,10 @@ public class AddrressRequest {
     private String town;
     private String specificAddress;
 
-    public AddrressRequest() {
+    public AddressRequest() {
     }
 
-    public AddrressRequest(long addressId, long userId, boolean isDefault, String typeAddress, String fullName, String cellphone, String province, String district, String town, String specificAddress) {
+    public AddressRequest(long addressId, long userId, boolean isDefault, String typeAddress, String fullName, String cellphone, String province, String district, String town, String specificAddress) {
         this.addressId = addressId;
         this.userId = userId;
         this.isDefault = isDefault;

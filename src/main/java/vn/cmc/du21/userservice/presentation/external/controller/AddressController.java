@@ -11,9 +11,11 @@ import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.AddressMapper;
 import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
+import vn.cmc.du21.userservice.presentation.external.request.AddressRequest;
 import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.AddressService;
+import vn.cmc.du21.userservice.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 public class AddressController {
     @Autowired
     AddressService addressService;
+    @Autowired
+    UserService userService;
+
 
     //get all address by userId
     @GetMapping("/address")
@@ -61,7 +66,7 @@ public class AddressController {
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
-                addressService.getAddressByAddressId(userLogin.getUserId(), addressId))
+                addressService.getAddressByAddressId(userLogin.getUserId(), addressId)
         );
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
@@ -72,21 +77,25 @@ public class AddressController {
         );
     }
 
+
     //insert address
     @PostMapping("/address")
-    ResponseEntity<Object> addAddress(@RequestBody  userRequest) throws Throwable {
+    ResponseEntity<Object> addAddress(
+             @RequestBody AddressRequest addressRequest, HttpServletResponse response
+    , HttpServletRequest request) throws Throwable {
 
-        userService.checkEmailOrCellphoneExists(userRequest.getEmail(), userRequest.getCellphone());
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
-        UserResponse userResponse =  UserMapper.convertUserToUserResponse(
-                userService.addUser(UserMapper.convertUserRequestToUser(userRequest))
+
+        AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
+                addressService.addAddress(AddressMapper.convertAddressRequestToAddress(addressRequest), userLogin.getUserId())
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
                         "create user successfully !",
-                        userResponse
+                        addressResponse
                 )
         );
     }

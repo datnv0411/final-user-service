@@ -28,6 +28,10 @@ public class UserService {
 
         return userRepository.findByCellphone(cellphone).orElse(null);
     }
+    @Transactional
+    public  User findByUserId(long userId){
+        return userRepository.findByUserId(userId).orElse(null);
+    }
 
     @Transactional
     public User addUser(User user)
