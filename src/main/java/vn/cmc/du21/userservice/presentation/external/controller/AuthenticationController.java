@@ -101,8 +101,8 @@ public class AuthenticationController {
     {
         String otp = RandomOtpUtil.createOtp();
 
-       // if(SmsSender.sendOtp(cellphone, otp))
-        if(true)
+        if(SmsSender.sendOtp(cellphone, otp))
+        //if(true)
         {
             authenticationService.addOtp(otp, cellphone);
             return ResponseEntity.status(HttpStatus.OK).body(
