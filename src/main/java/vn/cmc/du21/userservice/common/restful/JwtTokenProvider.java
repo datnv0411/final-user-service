@@ -63,7 +63,6 @@ public class JwtTokenProvider {
         final String uri = "http://localhost:8888/api/v1.0/authentication/verify?token=" + token;
 
         RestTemplate restTemplate = new RestTemplate();
-        UserResponse userLogin = restTemplate.getForObject(uri, UserResponse.class);
-        return userLogin;
+        return restTemplate.getForObject(uri, UserResponse.class);
     }
 }

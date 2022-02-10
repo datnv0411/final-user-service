@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import vn.cmc.du21.userservice.common.restful.JwtTokenProvider;
 import vn.cmc.du21.userservice.common.restful.PageResponse;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
@@ -64,7 +63,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
-                        "found !!!",
+                        "Found !!!",
                         userResponse
                 )
         );
@@ -72,7 +71,7 @@ public class UserController {
 
     //insert user
     @PostMapping("/user")
-    ResponseEntity<Object> addUser(@RequestBody UserRequest userRequest) throws Throwable {
+    ResponseEntity<Object> addUser(@RequestBody UserRequest userRequest){
 
         userService.checkEmailOrCellphoneExists(userRequest.getEmail(), userRequest.getCellphone());
 
@@ -83,7 +82,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
-                        "create user successfully !",
+                        "Create user successfully !",
                         userResponse
                 )
         );
@@ -108,7 +107,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new StandardResponse<>(
                             StatusResponse.SUCCESSFUL,
-                            "successfully",
+                            "Successfully",
                             userResponse
                     ));
         }

@@ -37,7 +37,7 @@ public class AuthorizationController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new StandardResponse<>(
                         StatusResponse.BAD_REQUEST,
-                        "error token !!!"
+                        "Error token !!!"
                 )
         );
     }
