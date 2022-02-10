@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.cmc.du21.userservice.common.RandomOtpUtil;
-import vn.cmc.du21.userservice.common.SmsSender;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.SessionMapper;
@@ -20,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @RestController
 @RequestMapping(path = "/api/v1.0/authentication")
@@ -108,7 +106,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new StandardResponse<>(
                             StatusResponse.SUCCESSFUL,
-                            "Check your phone"
+                            "Check your phone !!!"
                     )
             );
         }
@@ -116,7 +114,7 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new StandardResponse<>(
                         StatusResponse.BAD_REQUEST,
-                        "can not send otp"
+                        "Can not send otp"
                 )
         );
     }

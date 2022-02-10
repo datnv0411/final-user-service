@@ -10,7 +10,6 @@ import vn.cmc.du21.userservice.common.restful.PageResponse;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.AddressMapper;
-import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
 import vn.cmc.du21.userservice.presentation.external.request.AddressRequest;
 import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
@@ -49,7 +48,7 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageResponse<Object>(
                         StatusResponse.SUCCESSFUL
-                        ,"successfully"
+                        ,"Successfully"
                         , listAddress.getContent()
                         , pageInt + 1
                         , listAddress.getTotalPages()
@@ -70,7 +69,7 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
-                        "found !!!",
+                        "Found !!!",
                         addressResponse
                 )
         );
@@ -79,21 +78,20 @@ public class AddressController {
 
     //insert address
     @PostMapping("/address")
-    ResponseEntity<Object> addAddress(
-             @RequestBody AddressRequest addressRequest, HttpServletResponse response
-    , HttpServletRequest request) throws Throwable {
+    ResponseEntity<Object> addAddress(@RequestBody AddressRequest addressRequest,
+                                      HttpServletResponse response, HttpServletRequest request){
 
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
-
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
-                addressService.addAddress(AddressMapper.convertAddressRequestToAddress(addressRequest), userLogin.getUserId())
+                addressService.addAddress(AddressMapper.convertAddressRequestToAddress(addressRequest),
+                        userLogin.getUserId())
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
-                        "create user successfully !",
+                        "Create address successfully !",
                         addressResponse
                 )
         );
@@ -102,8 +100,7 @@ public class AddressController {
     //update address
     @PutMapping("/address/{addressId}")
     ResponseEntity<Object> updateAddress(@RequestBody AddressRequest addressRequest, @PathVariable Long addressId,
-                                         HttpServletResponse response,
-                                         HttpServletRequest request)
+                                         HttpServletResponse response, HttpServletRequest request)
     {
         try {
             addressRequest.setAddressId(addressId);
@@ -117,7 +114,7 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new StandardResponse<>(
                             StatusResponse.SUCCESSFUL,
-                            "successfully",
+                            "Successfully",
                             addressResponse
                     ));
         }

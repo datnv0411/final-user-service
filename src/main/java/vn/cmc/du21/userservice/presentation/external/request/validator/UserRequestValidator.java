@@ -8,7 +8,6 @@ public class UserRequestValidator {
     }
     private static String regexPatternEmail = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-    private static String regexPatternPhone = "^([0][0-9]{9})$";
     //validation method
     public static void upsertRequestValidate(UserRequest request) throws Exception {
         //check fullname

@@ -48,12 +48,12 @@ public class UserService {
 
         if(!userRepository.existsById(user.getUserId()))
         {
-            throw new IndexOutOfBoundsException("user doesn't existed !!!");
+            throw new IndexOutOfBoundsException("User doesn't existed !!!");
         }
 
         Optional<User> foundUserByEmail = userRepository.findByEmailMinusItself(user.getEmail(), user.getUserId());
         if(foundUserByEmail.isPresent()) {
-                throw new RuntimeException("email existed !!!");
+                throw new RuntimeException("Email existed !!!");
         }
 
         return userRepository.findById(user.getUserId())
@@ -74,7 +74,7 @@ public class UserService {
     public void deleteById(Long id) throws Throwable{
         if(!userRepository.existsById(id))
         {
-            throw new RuntimeException("user doesn't exists !!!");
+            throw new RuntimeException("User doesn't exists !!!");
         }else
         {
             userRepository.deleteById(id);
@@ -84,7 +84,7 @@ public class UserService {
     @Transactional
     public User getUserById(Long id) throws Throwable{
         return userRepository.findById(id).orElseThrow(() -> {
-                    throw new RuntimeException("not found !!!");
+                    throw new RuntimeException("Not found !!!");
             }
         );
     }
@@ -93,12 +93,12 @@ public class UserService {
     public void checkEmailOrCellphoneExists(String email, String cellphone) {
         Optional<User> foundUserByEmail = userRepository.findByEmail(email);
         if(foundUserByEmail.isPresent()) {
-            throw new RuntimeException("email existed !!!");
+            throw new RuntimeException("Email existed !!!");
         }
 
         Optional<User> foundUserByCellphone = userRepository.findByCellphone(cellphone);
         if(foundUserByCellphone.isPresent()) {
-            throw new RuntimeException("cellphone existed !!!");
+            throw new RuntimeException("Cellphone existed !!!");
         }
     }
 
