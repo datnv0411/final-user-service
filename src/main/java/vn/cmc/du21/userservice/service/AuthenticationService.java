@@ -27,15 +27,19 @@ public class AuthenticationService {
     SessionRepository sessionRepository;
     @Autowired
     OtpRepository otpRepository;
+
     private static final int MAX_TRY_OTP = 5;
     private static final int TIME_WAIT = 5; // MINUTES
-    private static final int TIMESTAMP_OTP = 1; // MINUTES
+    private static final int TIMESTAMP_OTP = 5; // MINUTES
     private static final String STATUS_ACTIVE = "Active";
     private static final String STATUS_VERIFYING = "Verifying";
 
     @Transactional
-    public Session upsertSession(long userId, long deviceId) {
-        User user = userRepository.findById(userId).orElse(null);
+    public Session upsertSession(long userId, long deviceId) throws Throwable{
+
+        User user = userRepository.findById(userId)
+                .orElse(null);
+
         Set<Session> sessions = sessionRepository.findByUserId(userId);
 
         for (Session item:sessions) {
@@ -60,7 +64,7 @@ public class AuthenticationService {
     public void disableToken(String token) throws Throwable{
         Session foundSession = sessionRepository.findByToken(token)
                 .orElseThrow(() -> {
-                        throw new IndexOutOfBoundsException("Token is not available");
+                        throw new RuntimeException("Token does not exist !!!");
                     }
                 );
         foundSession.setStatus("Logout");
@@ -103,7 +107,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public String checkOtp(String otp, String cellphone) {
+    public void checkOtp(String otp, String cellphone) {
         Optional<Otp> foundOtp = otpRepository.findByCellphone(cellphone);
         if(foundOtp.isPresent())
         {
@@ -116,35 +120,45 @@ public class AuthenticationService {
                     foundOtp.get().setStatus("Verified");
                     foundOtp.get().setOtpTry(0);
                     otpRepository.save(foundOtp.get());
-                    return "true";
+                    return;
                 }
                 otpRepository.save(foundOtp.get());
-                return "Otp not available. Please try again !!!";
+                throw new RuntimeException("Otp not available. Please try again !!!");
             }
         }
 
-        return "Incorrect. Please try again !!!";
-    }
-
-    @Transactional
-    public User getUserByToken(String token) throws Throwable{
-        if(checkTokenActive(token))
-        {
-            long sessionId = JwtTokenProvider.getSessionIdFromJWT(token);
-            Session foundSession = sessionRepository.findById(sessionId).orElseThrow(() -> null);
-            return userRepository.findById(foundSession.getUser().getUserId()).orElse(null);
-        }
-        return null;
+        throw new RuntimeException("Incorrect. Please try again !!!");
     }
 
     @Transactional
     private boolean checkTokenActive(String token) {
-         Optional<Session> foundSession = sessionRepository.findByToken(token);
-         if(foundSession.isPresent() && foundSession.get().getStatus().equals(STATUS_ACTIVE))
-         {
-             Date expireTime = JwtTokenProvider.getExpireTimeFromJWT(token);
-             return expireTime.after(Date.from(Instant.now()));
-         }
-         return false;
+        Optional<Session> foundSession = sessionRepository.findByToken(token);
+        if(foundSession.isPresent() && foundSession.get().getStatus().equals(STATUS_ACTIVE))
+        {
+            Date expireTime = JwtTokenProvider.getExpireTimeFromJWT(token);
+            return expireTime.after(Date.from(Instant.now()));
+        }
+        return false;
+    }
+
+    @Transactional
+    public User getUserByToken(String token) throws Throwable{
+
+        if(this.checkTokenActive(token))
+        {
+            long sessionId = JwtTokenProvider.getSessionIdFromJWT(token);
+            Session foundSession = sessionRepository.findById(sessionId).orElseThrow(
+                    () -> {
+                        throw new RuntimeException("Token does not exist !!!");
+                    }
+            );
+            return userRepository.findById(foundSession.getUser().getUserId()).orElseThrow(
+                    () -> {
+                        throw new RuntimeException("User does not exist  !!!");
+                    }
+            );
+        }
+
+        throw new RuntimeException("Error token !!!");
     }
 }

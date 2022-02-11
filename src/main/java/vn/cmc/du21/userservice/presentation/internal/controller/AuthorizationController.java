@@ -26,19 +26,10 @@ public class AuthorizationController {
     ResponseEntity<Object> verify(@RequestParam(value = "token") String token,
                                   HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
-        if(authenticationService.getUserByToken(token) != null)
-        {
-            UserResponse userResponse = UserMapper.convertUserToUserResponse(authenticationService.getUserByToken(token));
-            return ResponseEntity.status(HttpStatus.OK).body(
-                            userResponse
-            );
-        }
+        UserResponse userResponse = UserMapper.convertUserToUserResponse(authenticationService.getUserByToken(token));
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new StandardResponse<>(
-                        StatusResponse.BAD_REQUEST,
-                        "error token !!!"
-                )
+        return ResponseEntity.status(HttpStatus.OK).body(
+                        userResponse
         );
     }
 }

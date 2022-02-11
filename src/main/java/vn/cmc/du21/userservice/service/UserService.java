@@ -1,9 +1,6 @@
 package vn.cmc.du21.userservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.cmc.du21.userservice.persistence.internal.entity.Role;
 import vn.cmc.du21.userservice.persistence.internal.entity.User;
@@ -24,19 +21,28 @@ public class UserService {
     RoleRepository roleRepository;
 
     @Transactional
-    public User findByCellphone(String cellphone) {
+    public User findByCellphone(String cellphone) throws Throwable{
 
         return userRepository.findByCellphone(cellphone).orElse(null);
     }
+
     @Transactional
-    public  User findByUserId(long userId){
-        return userRepository.findByUserId(userId).orElse(null);
+    public  User findByUserId(long userId) throws Throwable{
+
+        return userRepository.findByUserId(userId).orElseThrow(
+                ()->{
+                    throw new RuntimeException("User does not exist !!!");
+                }
+        );
     }
 
     @Transactional
-    public User addUser(User user)
-    {
-        Role role = roleRepository.findByNameRole("User").orElse(null);
+    public User addUser(User user) throws Throwable{
+        Role role = roleRepository.findByNameRole("User").orElseThrow(
+                ()->{
+                    throw new RuntimeException("Error add role for user, Role does not exist !!!");
+                }
+        );
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         user.setRoles(roles);
@@ -48,12 +54,12 @@ public class UserService {
 
         if(!userRepository.existsById(user.getUserId()))
         {
-            throw new IndexOutOfBoundsException("user doesn't existed !!!");
+            throw new IndexOutOfBoundsException("User doesn't existed !!!");
         }
 
         Optional<User> foundUserByEmail = userRepository.findByEmailMinusItself(user.getEmail(), user.getUserId());
         if(foundUserByEmail.isPresent()) {
-                throw new RuntimeException("email existed !!!");
+            throw new RuntimeException("Email existed !!!");
         }
 
         return userRepository.findById(user.getUserId())
@@ -71,41 +77,28 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteById(Long id) throws Throwable{
-        if(!userRepository.existsById(id))
-        {
-            throw new RuntimeException("user doesn't exists !!!");
-        }else
-        {
-            userRepository.deleteById(id);
-        }
-    }
-
-    @Transactional
     public User getUserById(Long id) throws Throwable{
+
         return userRepository.findById(id).orElseThrow(() -> {
-                    throw new RuntimeException("not found !!!");
+                    throw new RuntimeException("Not found !!!");
             }
         );
     }
 
-    @Transactional
-    public void checkEmailOrCellphoneExists(String email, String cellphone) {
-        Optional<User> foundUserByEmail = userRepository.findByEmail(email);
-        if(foundUserByEmail.isPresent()) {
-            throw new RuntimeException("email existed !!!");
-        }
+    public User checkCellphoneExistsInSessionTable(String cellphone) throws Throwable {
 
-        Optional<User> foundUserByCellphone = userRepository.findByCellphone(cellphone);
-        if(foundUserByCellphone.isPresent()) {
-            throw new RuntimeException("cellphone existed !!!");
+        if(findByCellphone(cellphone) == null)
+        {
+            User user = new User();
+            user.setCellphone(cellphone);
+            // add new user with role default 'User'
+            return addUser(user);
         }
-    }
-
-    @Transactional
-    public Page<User> getAllUsers(int page, int size, String sort)
-    {
-        return userRepository.findAll(PageRequest.of(page, size, Sort.by(sort)));
+        else
+        {
+            // get user
+            return findByCellphone(cellphone);
+        }
     }
 
     public void checkUserLogin(UserResponse userLogin, Long userId) {

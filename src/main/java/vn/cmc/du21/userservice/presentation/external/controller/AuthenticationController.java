@@ -10,7 +10,7 @@ import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.SessionMapper;
 import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
-import vn.cmc.du21.userservice.presentation.external.request.UserRequest;
+import vn.cmc.du21.userservice.presentation.external.request.OtpRequest;
 import vn.cmc.du21.userservice.presentation.external.response.SessionResponse;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.AuthenticationService;
@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @RestController
 @RequestMapping(path = "/api/v1.0/authentication")
@@ -29,38 +28,58 @@ public class AuthenticationController {
     UserService userService;
     @Autowired
     AuthenticationService authenticationService;
-    // SignIn
+
+    // Logout
+    @GetMapping("/logout")
+    ResponseEntity<Object> logout(HttpServletResponse response, HttpServletRequest request) throws Throwable {
+
+        String[] arr = request.getHeader("Authorization").split(" ");
+        String token = arr[1];
+
+        authenticationService.disableToken(token);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new StandardResponse<>(
+                        StatusResponse.SUCCESSFUL,
+                        "Logout successfully !!!"
+                )
+        );
+    }
+
+    //Generate Otp
+    @GetMapping("/generate-otp")
+    ResponseEntity<Object> generate(@RequestBody OtpRequest otpRequest,
+                                    HttpServletResponse response, HttpServletRequest request) {
+        String otp = RandomOtpUtil.createOtp();
+
+        //SmsSender.sendOtp(otpRequest.getCellphone(), otp);
+
+        authenticationService.addOtp(otp, otpRequest.getCellphone());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new StandardResponse<>(
+                        StatusResponse.SUCCESSFUL,
+                        "Check your phone !!!"
+                )
+        );
+    }
+
+    //VerifyOtp
     @PostMapping("/login")
-    ResponseEntity<Object> login(String cellphone,
-                                 HttpServletResponse response,
-                                 HttpServletRequest request)
-    {
+    ResponseEntity<Object> verifyOtp(@RequestBody OtpRequest otpRequest,
+                                     HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
-        UserResponse userResponse;
+        authenticationService.checkOtp(otpRequest.getOtpPass(), otpRequest.getCellphone());
 
-        if(userService.findByCellphone(cellphone) == null)
-        {
-            UserRequest userRequest = new UserRequest();
-            userRequest.setCellphone(cellphone);
-            // add new user with role default 'User'
-            userResponse =  UserMapper.convertUserToUserResponse(
-                    userService.addUser(UserMapper.convertUserRequestToUser(userRequest))
-            );
-        }
-        else
-        {
-            // get user
-            userResponse = UserMapper.convertUserToUserResponse(
-                    userService.findByCellphone(cellphone)
-            );
-        }
+        UserResponse userResponse = UserMapper.convertUserToUserResponse(
+                userService.checkCellphoneExistsInSessionTable(otpRequest.getCellphone())
+        );
 
         long deviceId = 1L;
         //create session for user
         SessionResponse sessionResponse = SessionMapper.convertSessionToSessionResponse(
                 authenticationService.upsertSession(userResponse.getUserId(), deviceId)
         );
-        
+
         //create user + session response
         List<Object> userSession = new ArrayList<>();
         userSession.add(userResponse);
@@ -74,71 +93,6 @@ public class AuthenticationController {
                         "Login successfully !",
                         userSession
                 )
-        );
-    }
-
-    // Logout
-    @GetMapping("/logout")
-    ResponseEntity<Object> logout(HttpServletResponse response, HttpServletRequest request) throws Throwable {
-        String[] arr = request.getHeader("Authorization").split(" ");
-        String token = arr[1];
-
-        authenticationService.disableToken(token);
-
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new StandardResponse<>(
-                        StatusResponse.SUCCESSFUL,
-                        "Logout successfully !"
-                )
-        );
-    }
-
-    //Generate Otp
-    @GetMapping("/generate-otp")
-    ResponseEntity<Object> generate(@RequestParam(value = "cellphone") String cellphone,
-                                    HttpServletResponse response,
-                                    HttpServletRequest request)
-    {
-        String otp = RandomOtpUtil.createOtp();
-
-       // if(SmsSender.sendOtp(cellphone, otp))
-        if(true)
-        {
-            authenticationService.addOtp(otp, cellphone);
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(
-                            StatusResponse.SUCCESSFUL,
-                            "Check your phone"
-                    )
-            );
-        }
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new StandardResponse<>(
-                        StatusResponse.BAD_REQUEST,
-                        "can not send otp"
-                )
-        );
-    }
-
-    //VerifyOtp
-    @PostMapping("/verify-otp")
-    ResponseEntity<Object> verifyOtp(@RequestParam(value = "cellphone") String cellphone,
-                                     @RequestParam(value = "otp") String otp,
-                                     HttpServletResponse response,
-                                     HttpServletRequest request)
-    {
-        String result = authenticationService.checkOtp(otp, cellphone);
-        if(result.equals("true"))
-        {
-            return login(cellphone, response, request);
-        }
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            new StandardResponse<>(
-                    StatusResponse.BAD_REQUEST,
-                    result
-            )
         );
     }
 }
