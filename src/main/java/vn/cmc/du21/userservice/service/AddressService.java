@@ -19,13 +19,16 @@ public class AddressService {
     UserService userService;
 
     @Transactional
-    public Address addAddress(Address address, long userId)
-    {
+    public Address addAddress(Address address, long userId) throws Throwable{
+
         User userLogin = userService.findByUserId(userId);
         address.setUser(userLogin);
         List<Address> addressList = addressRepository.findByUserId(userId);
 
-        if(addressList.isEmpty()) address.setDefault(true);
+        if(addressList.isEmpty())
+        {
+            address.setDefault(true);
+        }
         else
         {
             if(address.isDefault())
@@ -44,11 +47,17 @@ public class AddressService {
     }
 
     @Transactional
-    public Address updateAddress(Address address, long userId){
+    public Address updateAddress(Address address, long userId) throws Throwable{
+
         Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(userId, address.getAddressId());
 
         if(foundAddress.isPresent())
         {
+            if(foundAddress.get().isDefault() && !address.isDefault())
+            {
+                throw new RuntimeException("You must have a default address !!!");
+            }
+
             foundAddress.get().setDefault(address.isDefault());
             foundAddress.get().setTypeAddress(address.getTypeAddress());
             foundAddress.get().setFullName(address.getFullName());
@@ -57,6 +66,8 @@ public class AddressService {
             foundAddress.get().setDistrict(address.getDistrict());
             foundAddress.get().setTown(address.getTown());
             foundAddress.get().setSpecificAddress(address.getSpecificAddress());
+
+
 
             if(foundAddress.get().isDefault())
             {
@@ -75,13 +86,17 @@ public class AddressService {
             return foundAddress.get();
         }
 
-        return null;
+        throw new RuntimeException("Address does not exist !!!");
     }
 
     @Transactional
     public Address getAddressByAddressId(long userId, long addressId) throws Throwable{
-        return addressRepository.findByAddressIdAndUserId(userId, addressId).orElseThrow(
-                () -> {throw new RuntimeException("Address doesn't exist !!");}
+
+        return addressRepository.findByAddressIdAndUserId(userId, addressId)
+                .orElseThrow(
+                () -> {
+                    throw new RuntimeException("Address doesn't exist !!");
+                }
         );
     }
 
@@ -97,7 +112,8 @@ public class AddressService {
     }
 
     @Transactional
-    public void deleteByAddressId(long addressId, long userId) {
+    public void deleteByAddressId(long addressId, long userId) throws Throwable{
+
         Optional<Address> foundAddress = addressRepository.findByAddressIdAndUserId(userId, addressId);
         if(foundAddress.isPresent())
         {

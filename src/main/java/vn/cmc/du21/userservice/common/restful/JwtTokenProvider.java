@@ -56,8 +56,7 @@ public class JwtTokenProvider {
         return claims.getExpiration();
     }
 
-    public static UserResponse getInfoUserFromToken(HttpServletRequest request)
-    {
+    public static UserResponse getInfoUserFromToken(HttpServletRequest request) throws Throwable {
         String[] arr = request.getHeader("Authorization").split(" ");
         String token = arr[1];
         final String uri = "http://localhost:8888/api/v1.0/authentication/verify?token=" + token;
