@@ -30,8 +30,8 @@ public class AddressController {
     ResponseEntity<Object> getAllAddress(@RequestParam(value = "page", required = false) String page
             , @RequestParam(value = "size", required = false) String size
             , @RequestParam(value = "sort",required = false) String sort
-            , HttpServletResponse response, HttpServletRequest request)
-    {
+            , HttpServletResponse response, HttpServletRequest request) throws Throwable {
+
         if (page==null || !page.chars().allMatch(Character::isDigit) || page.equals("")) page="1";
         if (size==null || !size.chars().allMatch(Character::isDigit) || size.equals("")) size="10";
         if (sort==null || sort.equals("")) sort="addressId";
@@ -59,8 +59,7 @@ public class AddressController {
     //get address by addressId and userId
     @GetMapping("/address/{addressId}")
     ResponseEntity<Object> getUser(@PathVariable Long addressId,
-                                   HttpServletResponse response,
-                                   HttpServletRequest request) throws Throwable {
+                                   HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
@@ -80,7 +79,7 @@ public class AddressController {
     //insert address
     @PostMapping("/address")
     ResponseEntity<Object> addAddress(@RequestBody AddressRequest addressRequest,
-                                      HttpServletResponse response, HttpServletRequest request){
+                                      HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
@@ -101,52 +100,35 @@ public class AddressController {
     //update address
     @PutMapping("/address/{addressId}")
     ResponseEntity<Object> updateAddress(@RequestBody AddressRequest addressRequest, @PathVariable Long addressId,
-                                         HttpServletResponse response, HttpServletRequest request)
-    {
-        try {
-            addressRequest.setAddressId(addressId);
-            UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-            addressRequest.setUserId(userLogin.getUserId());
-            AddressResponse addressResponse = AddressMapper.convertAddressToAddressResponse(
-                    addressService.updateAddress(
-                            AddressMapper.convertAddressRequestToAddress(addressRequest),
-                            userLogin.getUserId())
-            );
+                                         HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(
-                            StatusResponse.SUCCESSFUL,
-                            "Successfully",
-                            addressResponse
-                    )
-            );
-        }
-        catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new StandardResponse<>(
-                            StatusResponse.BAD_REQUEST,
-                            e.getMessage()
-                    )
-            );
-        }
+        addressRequest.setAddressId(addressId);
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        addressRequest.setUserId(userLogin.getUserId());
+        AddressResponse addressResponse = AddressMapper.convertAddressToAddressResponse(
+            addressService.updateAddress(
+                    AddressMapper.convertAddressRequestToAddress(addressRequest),
+                    userLogin.getUserId())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(
+            new StandardResponse<>(
+                    StatusResponse.SUCCESSFUL,
+                    "Successfully",
+                    addressResponse
+            )
+        );
     }
 
     //delete address
     @DeleteMapping("/address/{addressId}")
     ResponseEntity<Object> deleteAddress(@PathVariable Long addressId,
-                                      HttpServletResponse response,
-                                      HttpServletRequest request)
-    {
+                                         HttpServletResponse response, HttpServletRequest request) throws Throwable{
+
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        try{
-            addressService.deleteByAddressId(addressId, userLogin.getUserId());
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(StatusResponse.SUCCESSFUL, "Address deleted")
-            );
-        }catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new StandardResponse<>(StatusResponse.NOT_FOUND, e.getMessage())
-            );
-        }
+        addressService.deleteByAddressId(addressId, userLogin.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new StandardResponse<>(StatusResponse.SUCCESSFUL,
+                        "Address deleted")
+        );
     }
 }

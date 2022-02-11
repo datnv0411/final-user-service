@@ -13,7 +13,7 @@ public class SmsSender {
     public static final String ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
     public static final String AUTH_TOKEN = System.getenv("TWILIO_AUTH_TOKEN");
 
-    public static boolean sendOtp(String phoneNumber, String otp)  {
+    public static void sendOtp(String phoneNumber, String otp)  {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
         try {
             Message message = Message.creator(
@@ -25,8 +25,7 @@ public class SmsSender {
         }
         catch (Exception e)
         {
-            return false;
+            throw new RuntimeException(e.getMessage());
         }
-        return true;
     }
 }
