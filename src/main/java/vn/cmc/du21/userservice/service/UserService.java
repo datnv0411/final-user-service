@@ -23,11 +23,7 @@ public class UserService {
     @Transactional
     public User findByCellphone(String cellphone) throws Throwable{
 
-        return userRepository.findByCellphone(cellphone).orElseThrow(
-                ()->{
-                    throw new RuntimeException("User does not exist !!!");
-                }
-        );
+        return userRepository.findByCellphone(cellphone).orElse(null);
     }
 
     @Transactional
