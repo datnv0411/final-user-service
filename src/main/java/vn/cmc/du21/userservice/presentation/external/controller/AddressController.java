@@ -39,7 +39,17 @@ public class AddressController {
         int pageInt = Integer.parseInt(page)-1;
         int sizeInt = Integer.parseInt(size);
 
-        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        UserResponse userLogin;
+        try {
+            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new StandardResponse<>(
+                            StatusResponse.UNAUTHORIZED,
+                            "Bad token!!!"
+                    )
+            );
+        }
 
         Page<AddressResponse> listAddress = addressService.getAllAddress(userLogin.getUserId(), pageInt, sizeInt, sort)
                 .map(AddressMapper::convertAddressToAddressResponse);
@@ -61,7 +71,17 @@ public class AddressController {
     ResponseEntity<Object> getUser(@PathVariable Long addressId,
                                    HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
-        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        UserResponse userLogin;
+        try {
+            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new StandardResponse<>(
+                            StatusResponse.UNAUTHORIZED,
+                            "Bad token!!!"
+                    )
+            );
+        }
 
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
                 addressService.getAddressByAddressId(userLogin.getUserId(), addressId)
@@ -81,7 +101,17 @@ public class AddressController {
     ResponseEntity<Object> addAddress(@RequestBody AddressRequest addressRequest,
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
-        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        UserResponse userLogin;
+        try {
+            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new StandardResponse<>(
+                            StatusResponse.UNAUTHORIZED,
+                            "Bad token!!!"
+                    )
+            );
+        }
 
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
                 addressService.addAddress(AddressMapper.convertAddressRequestToAddress(addressRequest),
@@ -102,8 +132,19 @@ public class AddressController {
     ResponseEntity<Object> updateAddress(@RequestBody AddressRequest addressRequest, @PathVariable Long addressId,
                                          HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
+        UserResponse userLogin;
+        try {
+            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new StandardResponse<>(
+                            StatusResponse.UNAUTHORIZED,
+                            "Bad token!!!"
+                    )
+            );
+        }
+
         addressRequest.setAddressId(addressId);
-        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
         addressRequest.setUserId(userLogin.getUserId());
         AddressResponse addressResponse = AddressMapper.convertAddressToAddressResponse(
             addressService.updateAddress(
@@ -124,7 +165,18 @@ public class AddressController {
     ResponseEntity<Object> deleteAddress(@PathVariable Long addressId,
                                          HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
-        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        UserResponse userLogin;
+        try {
+            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new StandardResponse<>(
+                            StatusResponse.UNAUTHORIZED,
+                            "Bad token!!!"
+                    )
+            );
+        }
+
         addressService.deleteByAddressId(addressId, userLogin.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(StatusResponse.SUCCESSFUL,
