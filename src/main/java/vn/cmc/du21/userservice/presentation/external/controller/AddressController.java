@@ -24,8 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 public class AddressController {
     @Autowired
     AddressService addressService;
-    @Autowired
-    UserService userService;
 
     //get all address by userId
     @GetMapping("/address")
@@ -45,6 +43,7 @@ public class AddressController {
 
         Page<AddressResponse> listAddress = addressService.getAllAddress(userLogin.getUserId(), pageInt, sizeInt, sort)
                 .map(AddressMapper::convertAddressToAddressResponse);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageResponse<Object>(
                         StatusResponse.SUCCESSFUL
@@ -53,7 +52,8 @@ public class AddressController {
                         , pageInt + 1
                         , listAddress.getTotalPages()
                         , listAddress.getTotalElements()
-                ));
+                )
+        );
     }
 
     //get address by addressId and userId
@@ -61,11 +61,13 @@ public class AddressController {
     ResponseEntity<Object> getUser(@PathVariable Long addressId,
                                    HttpServletResponse response,
                                    HttpServletRequest request) throws Throwable {
+
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
 
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
                 addressService.getAddressByAddressId(userLogin.getUserId(), addressId)
         );
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
                         StatusResponse.SUCCESSFUL,
@@ -74,7 +76,6 @@ public class AddressController {
                 )
         );
     }
-
 
     //insert address
     @PostMapping("/address")
@@ -111,19 +112,22 @@ public class AddressController {
                             AddressMapper.convertAddressRequestToAddress(addressRequest),
                             userLogin.getUserId())
             );
+
             return ResponseEntity.status(HttpStatus.OK).body(
                     new StandardResponse<>(
                             StatusResponse.SUCCESSFUL,
                             "Successfully",
                             addressResponse
-                    ));
+                    )
+            );
         }
         catch (Throwable e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new StandardResponse<>(
                             StatusResponse.BAD_REQUEST,
                             e.getMessage()
-                    ));
+                    )
+            );
         }
     }
 

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController {
     @Autowired
     UserService userService;
+
     //get list user
     @GetMapping("/users")
     ResponseEntity<Object> getAllUsers(@RequestParam(value = "page", required = false) String page
@@ -36,8 +37,9 @@ public class UserController {
         int pageInt = Integer.parseInt(page)-1;
         int sizeInt = Integer.parseInt(size);
 
-        Page<UserResponse> listUser = userService.getAllUsers(pageInt,sizeInt,sort)
+        Page<UserResponse> listUser = userService.getAllUsers(pageInt, sizeInt, sort)
                 .map(UserMapper::convertUserToUserResponse);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageResponse<Object>(
                         StatusResponse.SUCCESSFUL
@@ -46,7 +48,8 @@ public class UserController {
                         , pageInt + 1
                         , listUser.getTotalPages()
                         , listUser.getTotalElements()
-        ));
+                )
+        );
     }
 
     //get user by id
@@ -127,7 +130,6 @@ public class UserController {
                                       HttpServletRequest request)
     {
         try{
-
             userService.deleteById(userId);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new StandardResponse<>(StatusResponse.SUCCESSFUL, "User deleted")
