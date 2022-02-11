@@ -29,7 +29,17 @@ public class UserController {
     ResponseEntity<Object> getUser(@PathVariable Long userId,
                                    HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
-        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        UserResponse userLogin;
+        try {
+            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new StandardResponse<>(
+                            StatusResponse.UNAUTHORIZED,
+                            "Bad token!!!"
+                    )
+            );
+        }
 
         userService.checkUserLogin(userLogin, userId);
         UserResponse userResponse =  UserMapper.convertUserToUserResponse(
@@ -49,7 +59,18 @@ public class UserController {
     ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long userId,
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
-        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        UserResponse userLogin;
+        try {
+            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new StandardResponse<>(
+                            StatusResponse.UNAUTHORIZED,
+                            "Bad token!!!"
+                    )
+            );
+        }
+
         userService.checkUserLogin(userLogin, userId);
         userRequest.setUserId(userId);
 

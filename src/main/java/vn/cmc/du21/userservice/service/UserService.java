@@ -29,6 +29,7 @@ public class UserService {
                 }
         );
     }
+
     @Transactional
     public  User findByUserId(long userId) throws Throwable{
 
