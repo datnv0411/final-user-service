@@ -3,7 +3,7 @@ package vn.cmc.du21.userservice.persistence.internal.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ADDRESS")
+@Table(name = "address")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

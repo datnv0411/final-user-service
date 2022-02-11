@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "OTP")
+@Table(name = "otp")
 public class Otp {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

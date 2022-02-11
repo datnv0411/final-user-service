@@ -30,7 +30,7 @@ public class AuthenticationService {
 
     private static final int MAX_TRY_OTP = 5;
     private static final int TIME_WAIT = 5; // MINUTES
-    private static final int TIMESTAMP_OTP = 1; // MINUTES
+    private static final int TIMESTAMP_OTP = 5; // MINUTES
     private static final String STATUS_ACTIVE = "Active";
     private static final String STATUS_VERIFYING = "Verifying";
 
@@ -38,9 +38,7 @@ public class AuthenticationService {
     public Session upsertSession(long userId, long deviceId) throws Throwable{
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    throw new RuntimeException("User does not exist  !!!");
-                });
+                .orElse(null);
 
         Set<Session> sessions = sessionRepository.findByUserId(userId);
 
