@@ -52,7 +52,7 @@ public class AuthenticationController {
                                     HttpServletResponse response, HttpServletRequest request) {
         String otp = RandomOtpUtil.createOtp();
 
-        //SmsSender.sendOtp(otpRequest.getCellphone(), otp);
+        SmsSender.sendOtp(otpRequest.getCellphone(), otp);
 
         authenticationService.addOtp(otp, otpRequest.getCellphone());
         return ResponseEntity.status(HttpStatus.OK).body(

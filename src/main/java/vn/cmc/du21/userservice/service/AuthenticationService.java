@@ -122,9 +122,9 @@ public class AuthenticationService {
                     otpRepository.save(foundOtp.get());
                     return;
                 }
-                otpRepository.save(foundOtp.get());
-                throw new RuntimeException("Otp not available. Please try again !!!");
             }
+            otpRepository.save(foundOtp.get());
+            throw new RuntimeException("Otp not available. Please try again !!!");
         }
 
         throw new RuntimeException("Incorrect. Please try again !!!");
