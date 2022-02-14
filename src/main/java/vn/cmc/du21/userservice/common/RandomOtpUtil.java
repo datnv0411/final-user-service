@@ -10,6 +10,7 @@ public class RandomOtpUtil {
     }
 
     public static String createOtp() {
+        System.out.println("");
         int upperbound = 10000;
         //generate random values from 0-9999
         int intRandom = rand.nextInt(upperbound);

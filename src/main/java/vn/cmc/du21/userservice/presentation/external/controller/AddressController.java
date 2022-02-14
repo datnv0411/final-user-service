@@ -1,5 +1,6 @@
 package vn.cmc.du21.userservice.presentation.external.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
+@Slf4j
 @RequestMapping(path = "/api/v1.0")
 public class AddressController {
     @Autowired
@@ -32,6 +34,7 @@ public class AddressController {
             , @RequestParam(value = "sort",required = false) String sort
             , HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
+        log.info("Mapped getAllAddress method {{GET: /address}}");
         if (page==null || !page.chars().allMatch(Character::isDigit) || page.equals("")) page="1";
         if (size==null || !size.chars().allMatch(Character::isDigit) || size.equals("")) size="10";
         if (sort==null || sort.equals("")) sort="addressId";
@@ -71,6 +74,7 @@ public class AddressController {
     ResponseEntity<Object> getUser(@PathVariable Long addressId,
                                    HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
+        log.info("Mapped getUser method {{GET: /address/{addressId}}}");
         UserResponse userLogin;
         try {
             userLogin = JwtTokenProvider.getInfoUserFromToken(request);
@@ -101,6 +105,7 @@ public class AddressController {
     ResponseEntity<Object> addAddress(@RequestBody AddressRequest addressRequest,
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
+        log.info("Mapped addAddress method {{POST: /address}}");
         UserResponse userLogin;
         try {
             userLogin = JwtTokenProvider.getInfoUserFromToken(request);
@@ -132,6 +137,7 @@ public class AddressController {
     ResponseEntity<Object> updateAddress(@RequestBody AddressRequest addressRequest, @PathVariable Long addressId,
                                          HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
+        log.info("Mapped updateAddress method {{PUT: /address/{addressId}}}");
         UserResponse userLogin;
         try {
             userLogin = JwtTokenProvider.getInfoUserFromToken(request);
@@ -165,6 +171,7 @@ public class AddressController {
     ResponseEntity<Object> deleteAddress(@PathVariable Long addressId,
                                          HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
+        log.info("Mapped deleteAddress method {{DELETE: /address/{addressId}}}");
         UserResponse userLogin;
         try {
             userLogin = JwtTokenProvider.getInfoUserFromToken(request);

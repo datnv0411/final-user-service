@@ -2,7 +2,9 @@ package vn.cmc.du21.userservice.common;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SmsSender {
     private SmsSender()
     {
@@ -14,6 +16,7 @@ public class SmsSender {
     public static final String AUTH_TOKEN = System.getenv("TWILIO_AUTH_TOKEN");
 
     public static void sendOtp(String phoneNumber, String otp)  {
+        log.info("Mapped sendOtp method");
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
         try {
             Message message = Message.creator(
