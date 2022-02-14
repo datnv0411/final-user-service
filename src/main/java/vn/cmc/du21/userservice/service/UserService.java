@@ -54,7 +54,7 @@ public class UserService {
 
         if(!userRepository.existsById(user.getUserId()))
         {
-            throw new IndexOutOfBoundsException("User doesn't existed !!!");
+            throw new IndexOutOfBoundsException("User doesn't exist !!!");
         }
 
         Optional<User> foundUserByEmail = userRepository.findByEmailMinusItself(user.getEmail(), user.getUserId());
