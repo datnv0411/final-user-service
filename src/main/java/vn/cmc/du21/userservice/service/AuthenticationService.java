@@ -106,12 +106,11 @@ public class AuthenticationService {
         }
     }
 
-    @Transactional
     public void checkOtp(String otp, String cellphone) {
         Optional<Otp> foundOtp = otpRepository.findByCellphone(cellphone);
         if(foundOtp.isPresent())
         {
-            foundOtp.get().setOtpTry( foundOtp.get().getOtpTry() + 1);
+            foundOtp.get().setOtpTry(foundOtp.get().getOtpTry() + 1);
             if(foundOtp.get().getOtpPass().equals(otp))
             {
                 if(foundOtp.get().getStatus().equals(STATUS_VERIFYING)
@@ -124,7 +123,6 @@ public class AuthenticationService {
                 }
             }
             otpRepository.save(foundOtp.get());
-            throw new RuntimeException("Otp not available. Please try again !!!");
         }
 
         throw new RuntimeException("Incorrect. Please try again !!!");

@@ -1,5 +1,6 @@
 package vn.cmc.du21.userservice.presentation.external.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,12 +20,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
+@Slf4j
 @RequestMapping(path = "/api/v1.0")
 public class UserController {
     @Autowired
     UserService userService;
 
     Object checkToken( HttpServletRequest request) throws Throwable{
+        log.info("Mapped checkToken method !!!");
         UserResponse userResponse;
         try {
             userResponse = JwtTokenProvider.getInfoUserFromToken(request);
@@ -44,6 +47,7 @@ public class UserController {
     ResponseEntity<Object> getUser(@PathVariable Long userId,
                                    HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
+        log.info("Mapped getUser method {{GET: /user/{userId}}}");
         UserResponse userLogin;
         try {
             userLogin = JwtTokenProvider.getInfoUserFromToken(request);
@@ -74,6 +78,7 @@ public class UserController {
     ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long userId,
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
+        log.info("Mapped updateUser {{PUT: /user/{userId}}}");
         UserResponse userLogin;
         try {
             userLogin = JwtTokenProvider.getInfoUserFromToken(request);
