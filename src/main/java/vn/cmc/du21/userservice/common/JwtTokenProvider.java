@@ -1,8 +1,11 @@
-package vn.cmc.du21.userservice.common.restful;
+package vn.cmc.du21.userservice.common;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
+import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 
@@ -11,6 +14,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+@Slf4j
 public class JwtTokenProvider {
     private JwtTokenProvider() {
         throw new IllegalStateException("Utility class");
@@ -56,12 +60,26 @@ public class JwtTokenProvider {
         return claims.getExpiration();
     }
 
-    public static UserResponse getInfoUserFromToken(HttpServletRequest request) throws Throwable {
-        String[] arr = request.getHeader("Authorization").split(" ");
-        String token = arr[1];
-        final String uri = "http://192.168.66.125:8100/api/v1.0/authentication/verify?token=" + token;
+    public static UserResponse getInfoUserFromToken(HttpServletRequest request, Environment env) throws AuthenticationException {
 
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject(uri, UserResponse.class);
+        log.info("Mapped getInfoUserFromToken method");
+
+        UserResponse userLogin;
+
+        try
+        {
+            String[] arr = request.getHeader("Authorization").split(" ");
+            String token = arr[1];
+            final String uri = env.getProperty("path.user-service") + "/api/v1.0/authentication/verify?token=" + token;
+            RestTemplate restTemplate = new RestTemplate();
+
+            userLogin = restTemplate.getForObject(uri, UserResponse.class);
+        }
+        catch (Exception e)
+        {
+            throw new AuthenticationException("BAD token !!!");
+        }
+
+        return userLogin;
     }
 }

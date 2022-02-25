@@ -2,7 +2,7 @@ package vn.cmc.du21.userservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.cmc.du21.userservice.common.restful.JwtTokenProvider;
+import vn.cmc.du21.userservice.common.JwtTokenProvider;
 import vn.cmc.du21.userservice.persistence.internal.entity.Otp;
 import vn.cmc.du21.userservice.persistence.internal.entity.Session;
 import vn.cmc.du21.userservice.persistence.internal.entity.User;
@@ -106,12 +106,11 @@ public class AuthenticationService {
         }
     }
 
-    @Transactional
     public void checkOtp(String otp, String cellphone) {
         Optional<Otp> foundOtp = otpRepository.findByCellphone(cellphone);
         if(foundOtp.isPresent())
         {
-            foundOtp.get().setOtpTry( foundOtp.get().getOtpTry() + 1);
+            foundOtp.get().setOtpTry(foundOtp.get().getOtpTry() + 1);
             if(foundOtp.get().getOtpPass().equals(otp))
             {
                 if(foundOtp.get().getStatus().equals(STATUS_VERIFYING)
@@ -122,9 +121,8 @@ public class AuthenticationService {
                     otpRepository.save(foundOtp.get());
                     return;
                 }
-                otpRepository.save(foundOtp.get());
-                throw new RuntimeException("Otp not available. Please try again !!!");
             }
+            otpRepository.save(foundOtp.get());
         }
 
         throw new RuntimeException("Incorrect. Please try again !!!");

@@ -1,5 +1,6 @@
 package vn.cmc.du21.userservice.presentation.external.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping(path = "/api/v1.0/authentication")
 public class AuthenticationController {
     @Autowired
@@ -33,6 +35,7 @@ public class AuthenticationController {
     @GetMapping("/logout")
     ResponseEntity<Object> logout(HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
+        log.info("Mapped logout method {{GET: /logout}}");
         String[] arr = request.getHeader("Authorization").split(" ");
         String token = arr[1];
 
@@ -46,13 +49,15 @@ public class AuthenticationController {
         );
     }
 
-    //Generate Otp
-    @GetMapping("/generate-otp")
+    //Generate Otp - nên để post, id để là uuid
+    @PostMapping("/generate-otp")
     ResponseEntity<Object> generate(@RequestBody OtpRequest otpRequest,
                                     HttpServletResponse response, HttpServletRequest request) {
+
+        log.info("Mapped generate method {{POST: /generate-otp}}");
         String otp = RandomOtpUtil.createOtp();
 
-        //SmsSender.sendOtp(otpRequest.getCellphone(), otp);
+        SmsSender.sendOtp(otpRequest.getCellphone(), otp);
 
         authenticationService.addOtp(otp, otpRequest.getCellphone());
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -68,6 +73,7 @@ public class AuthenticationController {
     ResponseEntity<Object> verifyOtp(@RequestBody OtpRequest otpRequest,
                                      HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
+        log.info("Mapped verifyOtp method {{GET: /login}}");
         authenticationService.checkOtp(otpRequest.getOtpPass(), otpRequest.getCellphone());
 
         UserResponse userResponse = UserMapper.convertUserToUserResponse(
