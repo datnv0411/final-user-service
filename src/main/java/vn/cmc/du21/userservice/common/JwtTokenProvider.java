@@ -24,7 +24,7 @@ public class JwtTokenProvider {
     private static final String JWT_SECRET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     //Thời gian có hiệu lực của chuỗi jwt
-    private static final long JWT_AMOUNT_TO_ADD_TIME = 1;
+    private static final long JWT_AMOUNT_TO_ADD_TIME = 30;
     private static final ChronoUnit JWT_TIME_UNIT = ChronoUnit.DAYS;
 
     // Tạo ra jwt từ thông tin user

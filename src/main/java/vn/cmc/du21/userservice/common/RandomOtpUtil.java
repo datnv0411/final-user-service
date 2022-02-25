@@ -1,19 +1,9 @@
 package vn.cmc.du21.userservice.common;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Random;
 
 public class RandomOtpUtil {
-    private static Random rand;
-
-    static {
-        try {
-            rand = SecureRandom.getInstanceStrong();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
+    private static Random rand = new Random();
 
     private RandomOtpUtil() {
         super();
