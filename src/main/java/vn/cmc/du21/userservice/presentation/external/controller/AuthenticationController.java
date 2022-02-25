@@ -50,7 +50,7 @@ public class AuthenticationController {
     }
 
     //Generate Otp - nên để post, id để là uuid
-    @GetMapping("/generate-otp")
+    @PostMapping("/generate-otp")
     ResponseEntity<Object> generate(@RequestBody OtpRequest otpRequest,
                                     HttpServletResponse response, HttpServletRequest request) {
 
@@ -73,7 +73,7 @@ public class AuthenticationController {
     ResponseEntity<Object> verifyOtp(@RequestBody OtpRequest otpRequest,
                                      HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
-        log.info("Mapped verifyOtp method {{GET: /login}}");
+        log.info("Mapped verifyOtp method {{Post: /login}}");
         authenticationService.checkOtp(otpRequest.getOtpPass(), otpRequest.getCellphone());
 
         UserResponse userResponse = UserMapper.convertUserToUserResponse(
