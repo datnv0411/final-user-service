@@ -50,11 +50,11 @@ public class AuthenticationController {
     }
 
     //Generate Otp - nên để post, id để là uuid
-    @GetMapping("/generate-otp")
+    @PostMapping("/generate-otp")
     ResponseEntity<Object> generate(@RequestBody OtpRequest otpRequest,
                                     HttpServletResponse response, HttpServletRequest request) {
 
-        log.info("Mapped generate method {{GET: /generate-otp}}");
+        log.info("Mapped generate method {{POST: /generate-otp}}");
         String otp = RandomOtpUtil.createOtp();
 
         SmsSender.sendOtp(otpRequest.getCellphone(), otp);
