@@ -2,7 +2,7 @@ package vn.cmc.du21.userservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.cmc.du21.userservice.common.restful.JwtTokenProvider;
+import vn.cmc.du21.userservice.common.JwtTokenProvider;
 import vn.cmc.du21.userservice.persistence.internal.entity.Otp;
 import vn.cmc.du21.userservice.persistence.internal.entity.Session;
 import vn.cmc.du21.userservice.persistence.internal.entity.User;

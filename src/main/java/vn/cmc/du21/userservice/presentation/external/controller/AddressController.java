@@ -2,11 +2,12 @@ package vn.cmc.du21.userservice.presentation.external.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.cmc.du21.userservice.common.restful.JwtTokenProvider;
+import vn.cmc.du21.userservice.common.JwtTokenProvider;
 import vn.cmc.du21.userservice.common.restful.PageResponse;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
@@ -15,7 +16,6 @@ import vn.cmc.du21.userservice.presentation.external.request.AddressRequest;
 import vn.cmc.du21.userservice.presentation.external.response.AddressResponse;
 import vn.cmc.du21.userservice.presentation.external.response.UserResponse;
 import vn.cmc.du21.userservice.service.AddressService;
-import vn.cmc.du21.userservice.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 public class AddressController {
     @Autowired
     AddressService addressService;
+    @Autowired
+    Environment env;
 
     //get all address by userId
     @GetMapping("/address")
@@ -42,19 +44,10 @@ public class AddressController {
         int pageInt = Integer.parseInt(page)-1;
         int sizeInt = Integer.parseInt(size);
 
-        UserResponse userLogin;
-        try {
-            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new StandardResponse<>(
-                            StatusResponse.UNAUTHORIZED,
-                            "Bad token!!!"
-                    )
-            );
-        }
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
+        long userId = userLogin.getUserId();
 
-        Page<AddressResponse> listAddress = addressService.getAllAddress(userLogin.getUserId(), pageInt, sizeInt, sort)
+        Page<AddressResponse> listAddress = addressService.getAllAddress(userId, pageInt, sizeInt, sort)
                 .map(AddressMapper::convertAddressToAddressResponse);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -75,20 +68,11 @@ public class AddressController {
                                    HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
         log.info("Mapped getUser method {{GET: /address/{addressId}}}");
-        UserResponse userLogin;
-        try {
-            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new StandardResponse<>(
-                            StatusResponse.UNAUTHORIZED,
-                            "Bad token!!!"
-                    )
-            );
-        }
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
+        long userId = userLogin.getUserId();
 
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
-                addressService.getAddressByAddressId(userLogin.getUserId(), addressId)
+                addressService.getAddressByAddressId(userId, addressId)
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -106,21 +90,12 @@ public class AddressController {
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
         log.info("Mapped addAddress method {{POST: /address}}");
-        UserResponse userLogin;
-        try {
-            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new StandardResponse<>(
-                            StatusResponse.UNAUTHORIZED,
-                            "Bad token!!!"
-                    )
-            );
-        }
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
+        long userId = userLogin.getUserId();
 
         AddressResponse addressResponse =  AddressMapper.convertAddressToAddressResponse(
                 addressService.addAddress(AddressMapper.convertAddressRequestToAddress(addressRequest),
-                        userLogin.getUserId())
+                        userId)
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -138,24 +113,15 @@ public class AddressController {
                                          HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
         log.info("Mapped updateAddress method {{PUT: /address/{addressId}}}");
-        UserResponse userLogin;
-        try {
-            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new StandardResponse<>(
-                            StatusResponse.UNAUTHORIZED,
-                            "Bad token!!!"
-                    )
-            );
-        }
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
+        long userId = userLogin.getUserId();
 
         addressRequest.setAddressId(addressId);
-        addressRequest.setUserId(userLogin.getUserId());
+        addressRequest.setUserId(userId);
         AddressResponse addressResponse = AddressMapper.convertAddressToAddressResponse(
             addressService.updateAddress(
                     AddressMapper.convertAddressRequestToAddress(addressRequest),
-                    userLogin.getUserId())
+                    userId)
         );
         return ResponseEntity.status(HttpStatus.OK).body(
             new StandardResponse<>(
@@ -172,19 +138,10 @@ public class AddressController {
                                          HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
         log.info("Mapped deleteAddress method {{DELETE: /address/{addressId}}}");
-        UserResponse userLogin;
-        try {
-            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new StandardResponse<>(
-                            StatusResponse.UNAUTHORIZED,
-                            "Bad token!!!"
-                    )
-            );
-        }
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
+        long userId = userLogin.getUserId();
 
-        addressService.deleteByAddressId(addressId, userLogin.getUserId());
+        addressService.deleteByAddressId(addressId, userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(StatusResponse.SUCCESSFUL,
                         "Address deleted")

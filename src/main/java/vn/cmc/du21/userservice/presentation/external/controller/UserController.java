@@ -2,12 +2,11 @@ package vn.cmc.du21.userservice.presentation.external.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.cmc.du21.userservice.common.restful.JwtTokenProvider;
-import vn.cmc.du21.userservice.common.restful.PageResponse;
+import vn.cmc.du21.userservice.common.JwtTokenProvider;
 import vn.cmc.du21.userservice.common.restful.StandardResponse;
 import vn.cmc.du21.userservice.common.restful.StatusResponse;
 import vn.cmc.du21.userservice.presentation.external.mapper.UserMapper;
@@ -25,22 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController {
     @Autowired
     UserService userService;
-
-    Object checkToken( HttpServletRequest request) throws Throwable{
-        log.info("Mapped checkToken method !!!");
-        UserResponse userResponse;
-        try {
-            userResponse = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new StandardResponse<>(
-                            StatusResponse.SUCCESSFUL,
-                            ex.getMessage()
-                    )
-            );
-        }
-        return userResponse;
-    }
+    @Autowired
+    Environment env;
 
     //get user by id
     @GetMapping("/user/{userId}")
@@ -48,17 +33,7 @@ public class UserController {
                                    HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
         log.info("Mapped getUser method {{GET: /user/{userId}}}");
-        UserResponse userLogin;
-        try {
-            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new StandardResponse<>(
-                            StatusResponse.UNAUTHORIZED,
-                            "Bad token!!!"
-                    )
-            );
-        }
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
 
         userService.checkUserLogin(userLogin, userId);
         UserResponse userResponse =  UserMapper.convertUserToUserResponse(
@@ -79,17 +54,7 @@ public class UserController {
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
         log.info("Mapped updateUser {{PUT: /user/{userId}}}");
-        UserResponse userLogin;
-        try {
-            userLogin = JwtTokenProvider.getInfoUserFromToken(request);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new StandardResponse<>(
-                            StatusResponse.UNAUTHORIZED,
-                            "Bad token!!!"
-                    )
-            );
-        }
+        UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
 
         userService.checkUserLogin(userLogin, userId);
         userRequest.setUserId(userId);
