@@ -100,11 +100,4 @@ public class UserService {
             return findByCellphone(cellphone);
         }
     }
-
-    public void checkUserLogin(UserResponse userLogin, Long userId) {
-        if(userLogin.getUserId() != userId)
-        {
-            throw new RuntimeException("You can not access");
-        }
-    }
 }
