@@ -81,7 +81,7 @@ public class UserService {
 
         return userRepository.findById(id).orElseThrow(() -> {
                     throw new RuntimeException("Not found !!!");
-            }
+                }
         );
     }
 

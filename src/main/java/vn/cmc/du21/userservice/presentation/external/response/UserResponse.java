@@ -20,6 +20,10 @@ public class UserResponse {
         this.cellphone = cellphone;
     }
 
+    public UserResponse(String cellphone) {
+        this.cellphone = cellphone;
+    }
+
     public long getUserId() {
         return userId;
     }
