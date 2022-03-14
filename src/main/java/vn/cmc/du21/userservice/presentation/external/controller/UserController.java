@@ -48,7 +48,7 @@ public class UserController {
 
     //update user
     @PutMapping("/user/update")
-    ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long userId,
+    ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest,
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
         log.info("Mapped updateUser {{PUT: /user/{userId}}}");
