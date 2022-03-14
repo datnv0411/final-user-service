@@ -28,16 +28,14 @@ public class UserController {
     Environment env;
 
     //get user by id
-    @GetMapping("/user/{userId}")
-    ResponseEntity<Object> getUser(@PathVariable Long userId,
-                                   HttpServletResponse response, HttpServletRequest request) throws Throwable {
+    @GetMapping("/user/my-info")
+    ResponseEntity<Object> getUser(HttpServletResponse response, HttpServletRequest request) throws Throwable {
 
         log.info("Mapped getUser method {{GET: /user/{userId}}}");
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
 
-        userService.checkUserLogin(userLogin, userId);
         UserResponse userResponse =  UserMapper.convertUserToUserResponse(
-                userService.getUserById(userId)
+                userService.getUserById(userLogin.getUserId())
         );
         return ResponseEntity.status(HttpStatus.OK).body(
                 new StandardResponse<>(
@@ -49,15 +47,14 @@ public class UserController {
     }
 
     //update user
-    @PutMapping("/user/{userId}")
+    @PutMapping("/user/update")
     ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long userId,
                                       HttpServletResponse response, HttpServletRequest request) throws Throwable{
 
         log.info("Mapped updateUser {{PUT: /user/{userId}}}");
         UserResponse userLogin = JwtTokenProvider.getInfoUserFromToken(request, env);
 
-        userService.checkUserLogin(userLogin, userId);
-        userRequest.setUserId(userId);
+        userRequest.setUserId(userLogin.getUserId());
 
         UserRequestValidator.upsertRequestValidate(userRequest);
 
