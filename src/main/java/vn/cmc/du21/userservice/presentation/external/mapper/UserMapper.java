@@ -32,4 +32,7 @@ public class UserMapper {
         return new UserResponse(user.getUserId(), user.getFullName(), dob,
                 user.getGender(), user.getEmail(), user.getCellphone());
     }
+    public static UserResponse convertCreateUser (User user){
+        return  new UserResponse(user.getCellphone());
+    }
 }

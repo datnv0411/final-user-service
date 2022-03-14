@@ -64,8 +64,8 @@ public class AuthenticationService {
     public void disableToken(String token) throws Throwable{
         Session foundSession = sessionRepository.findByToken(token)
                 .orElseThrow(() -> {
-                        throw new RuntimeException("Token does not exist !!!");
-                    }
+                            throw new RuntimeException("Token does not exist !!!");
+                        }
                 );
         foundSession.setStatus("Logout");
         sessionRepository.save(foundSession);

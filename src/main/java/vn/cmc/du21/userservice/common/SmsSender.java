@@ -21,7 +21,7 @@ public class SmsSender {
         try {
             Message message = Message.creator(
                             new com.twilio.type.PhoneNumber("+84"+phoneNumber),
-                            new com.twilio.type.PhoneNumber("+19033213365"),
+                            new com.twilio.type.PhoneNumber("+18565531074"),
                             "Your verification code: " + otp)
                     .create();
             System.out.println(message.getSid());
