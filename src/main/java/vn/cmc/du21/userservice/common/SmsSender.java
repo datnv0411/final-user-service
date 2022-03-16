@@ -12,6 +12,7 @@ public class SmsSender {
     }
     // Find your Account SID and Auth Token at twilio.com/console
     // and set the environment variables. See http://twil.io/secure
+    //TWILIO_ACCOUNT_SID va TWILIO_AUTH_TOKEN lấy từ biến môi trường
     public static final String ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
     public static final String AUTH_TOKEN = System.getenv("TWILIO_AUTH_TOKEN");
 
